@@ -1,0 +1,2342 @@
+{
+ "versao": 1,
+ "origem": "Gestao_Encomendas_Fios_Lotes.xlsx",
+ "encomendas": [
+  {
+   "id": "2026-630",
+   "num": "2026/630",
+   "cliente": "O & G",
+   "data": "2026-09-29",
+   "ref": "2026/308",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "RIB 2x1 30/1 Pent C/ Licra 20",
+     "qtd": 765,
+     "qprev": 3.0,
+     "fios": [
+      {
+       "fio": "30/1 Pent Comp. Org. OCS",
+       "pct": 95.0
+      },
+      {
+       "fio": "Licra 22",
+       "pct": 5.0
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "GT26/893",
+     "data": "2026-10-01",
+     "fio": "30/1 Pent Comp. Org. OCS",
+     "lote": "1302582606166",
+     "qtd": 766.59,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1397",
+     "data": "2026-10-02",
+     "artigoId": "a1",
+     "lote": "1302582606166",
+     "qtd": 72,
+     "nota": ""
+    },
+    {
+     "id": "m2",
+     "guia": "2326/1405",
+     "data": "2026-10-06",
+     "artigoId": "a1",
+     "lote": "1302582606166",
+     "qtd": 98,
+     "nota": ""
+    },
+    {
+     "id": "m3",
+     "guia": "2326/1408",
+     "data": "2026-10-07",
+     "artigoId": "a1",
+     "lote": "1302582606166",
+     "qtd": 105,
+     "nota": ""
+    },
+    {
+     "id": "m4",
+     "guia": "2326/1415",
+     "data": "2026-10-08",
+     "artigoId": "a1",
+     "lote": "1302582606166",
+     "qtd": 115,
+     "nota": ""
+    },
+    {
+     "id": "m5",
+     "guia": "2326/1422",
+     "data": "2026-10-09",
+     "artigoId": "a1",
+     "lote": "1302582606166",
+     "qtd": 135,
+     "nota": ""
+    },
+    {
+     "id": "m6",
+     "guia": "2326/1425",
+     "data": "2026-10-12",
+     "artigoId": "a1",
+     "lote": "1302582606166",
+     "qtd": 121,
+     "nota": ""
+    },
+    {
+     "id": "m7",
+     "guia": "2326/1432",
+     "data": "2026-10-13",
+     "artigoId": "a1",
+     "lote": "1302582606166",
+     "qtd": 119,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-650",
+   "num": "2026/650",
+   "cliente": "O & G",
+   "data": "2026-10-09",
+   "ref": "2026/316",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "RIB 1X1 67% LYOCEL / 33% CO",
+     "qtd": 487,
+     "qprev": 2.0,
+     "fios": [
+      {
+       "fio": "24/1 67% LYOCEL / 33% CO",
+       "pct": 100
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "GT26/900",
+     "data": "2026-10-09",
+     "fio": "24/1 67% LYOCEL / 33% CO",
+     "lote": "E2PC124213",
+     "qtd": 501.6,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1424",
+     "data": "2026-10-12",
+     "artigoId": "a1",
+     "lote": "E2PC124213",
+     "qtd": 186,
+     "nota": ""
+    },
+    {
+     "id": "m2",
+     "guia": "2326/1431",
+     "data": "2026-10-13",
+     "artigoId": "a1",
+     "lote": "E2PC124213",
+     "qtd": 238,
+     "nota": ""
+    },
+    {
+     "id": "m3",
+     "guia": "2326-1435",
+     "data": "2026-10-14",
+     "artigoId": "a1",
+     "lote": "E2PC124213",
+     "qtd": 63,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-671",
+   "num": "2026/671",
+   "cliente": "O & G",
+   "data": "2026-10-19",
+   "ref": "2026/322",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "Rib 2x1 95% 30/1 CO Pent OCS / 5% EA",
+     "qtd": 402,
+     "qprev": 2.0,
+     "fios": [
+      {
+       "fio": "30/1 Pent Org. OCS",
+       "pct": 95.0
+      },
+      {
+       "fio": "Elastano 22",
+       "pct": 5.0
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "GT26/919",
+     "data": "2026-10-19",
+     "fio": "30/1 Pent Org. OCS",
+     "lote": "904657",
+     "qtd": 408,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1452",
+     "data": "2026-10-20",
+     "artigoId": "a1",
+     "lote": "904657",
+     "qtd": 67,
+     "nota": ""
+    },
+    {
+     "id": "m2",
+     "guia": "2326/1459",
+     "data": "2026-10-21",
+     "artigoId": "a1",
+     "lote": "904657",
+     "qtd": 123,
+     "nota": ""
+    },
+    {
+     "id": "m3",
+     "guia": "2326/1470",
+     "data": "2026-10-22",
+     "artigoId": "a1",
+     "lote": "904657",
+     "qtd": 120,
+     "nota": ""
+    },
+    {
+     "id": "m4",
+     "guia": "2326/1477",
+     "data": "2026-10-23",
+     "artigoId": "a1",
+     "lote": "904657",
+     "qtd": 93,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-673",
+   "num": "2026/673",
+   "cliente": "O & G",
+   "data": "2026-10-19",
+   "ref": "2026/324",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "Jersey 30/1 100% Co Pent. BCI",
+     "qtd": 30,
+     "qprev": 2.0,
+     "fios": [
+      {
+       "fio": "30/1 Pent Org. OCS",
+       "pct": 100
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "GT26/919",
+     "data": "2026-10-19",
+     "fio": "30/1 Pent Org. OCS",
+     "lote": "904657",
+     "qtd": 32,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1460",
+     "data": "2026-10-21",
+     "artigoId": "a1",
+     "lote": "904657",
+     "qtd": 31.5,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-680",
+   "num": "2026/680",
+   "cliente": "O & G",
+   "data": "2026-10-21",
+   "ref": "2026/326",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "FELPA DIAG. 3X1 30/1 CO + 8/1 PES/CO",
+     "qtd": 725,
+     "qprev": 2.0,
+     "fios": [
+      {
+       "fio": "30/1 PENT ORG. OCS",
+       "pct": 53.72
+      },
+      {
+       "fio": "8/1 50% PES / 50% CO OE",
+       "pct": 46.28
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "GT26/924",
+     "data": "2026-10-21",
+     "fio": "8/1 50% PES / 50% CO OE",
+     "lote": "26860001",
+     "qtd": 350.2,
+     "nota": ""
+    },
+    {
+     "id": "e2",
+     "tipo": "entrada",
+     "guia": "GT26/923",
+     "data": "2026-10-21",
+     "fio": "30/1 PENT ORG. OCS",
+     "lote": "904657",
+     "qtd": 400,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1471",
+     "data": "2026-10-22",
+     "artigoId": "a1",
+     "lote": "904657 + 26860001",
+     "qtd": 238,
+     "nota": ""
+    },
+    {
+     "id": "m2",
+     "guia": "2326/1481",
+     "data": "2026-10-26",
+     "artigoId": "a1",
+     "lote": "904657 + 26860001",
+     "qtd": 140,
+     "nota": ""
+    },
+    {
+     "id": "m3",
+     "guia": "2326/1478",
+     "data": "2026-10-23",
+     "artigoId": "a1",
+     "lote": "904657 + 26860001",
+     "qtd": 347,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-695",
+   "num": "2026/695",
+   "cliente": "O & G",
+   "data": "2026-10-23",
+   "ref": "2026/332",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "RIB 2X2 24/1 ALG. ORG. OCS C/ ELAST.",
+     "qtd": 220,
+     "qprev": 2.0,
+     "fios": [
+      {
+       "fio": "24/1 100% CO ORG. OCS",
+       "pct": 96.5
+      },
+      {
+       "fio": "ELASTANO 22",
+       "pct": 3.5
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "GT26/936",
+     "data": "2026-10-23",
+     "fio": "24/1 100% CO ORG. OCS",
+     "lote": "1240062605887",
+     "qtd": 251.43,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1482",
+     "data": "2026-10-26",
+     "artigoId": "a1",
+     "lote": "1240062605887",
+     "qtd": 88,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-563",
+   "num": "2026/563",
+   "cliente": "Casa da Malha",
+   "data": "2026-08-05",
+   "ref": "26/29175",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "Jersey 20/1 100% linho",
+     "qtd": 8035,
+     "qprev": 5.0,
+     "fios": [
+      {
+       "fio": "20/1 100% linho",
+       "pct": 100
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "3621",
+     "data": "2026-09-21",
+     "fio": "20/1 100% linho",
+     "lote": "F0768/9111",
+     "qtd": 1724.4,
+     "nota": ""
+    },
+    {
+     "id": "e2",
+     "tipo": "entrada",
+     "guia": "3747",
+     "data": "2026-09-30",
+     "fio": "20/1 100% linho",
+     "lote": "F0768/9111",
+     "qtd": 1234,
+     "nota": ""
+    },
+    {
+     "id": "e3",
+     "tipo": "entrada",
+     "guia": "3809",
+     "data": "2026-10-02",
+     "fio": "20/1 100% linho",
+     "lote": "F0768/9111",
+     "qtd": 986.3,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1351",
+     "data": "2026-09-22",
+     "artigoId": "a1",
+     "lote": "F0768/9111",
+     "qtd": 22.5,
+     "nota": ""
+    },
+    {
+     "id": "m2",
+     "guia": "2326/1358",
+     "data": "2026-09-24",
+     "artigoId": "a1",
+     "lote": "F0768/9111",
+     "qtd": 20,
+     "nota": ""
+    },
+    {
+     "id": "m3",
+     "guia": "2326/1368",
+     "data": "2026-09-25",
+     "artigoId": "a1",
+     "lote": "F0768/9111",
+     "qtd": 91,
+     "nota": ""
+    },
+    {
+     "id": "m4",
+     "guia": "2326/1386",
+     "data": "2026-09-30",
+     "artigoId": "a1",
+     "lote": "F0768/9111",
+     "qtd": 858,
+     "nota": ""
+    },
+    {
+     "id": "m5",
+     "guia": "2326/1400",
+     "data": "2026-10-02",
+     "artigoId": "a1",
+     "lote": "F0768/9111",
+     "qtd": 656,
+     "nota": ""
+    },
+    {
+     "id": "m6",
+     "guia": "2326/1412",
+     "data": "2026-10-07",
+     "artigoId": "a1",
+     "lote": "F0768/9111",
+     "qtd": 613,
+     "nota": ""
+    },
+    {
+     "id": "m7",
+     "guia": "2326/1421",
+     "data": "2026-10-09",
+     "artigoId": "a1",
+     "lote": "F0768/9111",
+     "qtd": 544,
+     "nota": ""
+    },
+    {
+     "id": "m8",
+     "guia": "2326/1438",
+     "data": "2026-10-14",
+     "artigoId": "a1",
+     "lote": "F0768/9111",
+     "qtd": 941,
+     "nota": ""
+    },
+    {
+     "id": "m9",
+     "guia": "2326/1445",
+     "data": "2026-10-16",
+     "artigoId": "a1",
+     "lote": "F0768/9111",
+     "qtd": 83,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-631",
+   "num": "2026/631",
+   "cliente": "Casa da Malha",
+   "data": "2026-09-30",
+   "ref": "26/34697",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "Jersey Duplo 20-30'' Algodão",
+     "qtd": 565,
+     "qprev": 2.0,
+     "fios": [
+      {
+       "fio": "30/1 100% CO Org. Gots",
+       "pct": 100
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "3745",
+     "data": "2026-09-30",
+     "fio": "30/1 100% CO Org. Gots",
+     "lote": "F0714/1300062605883",
+     "qtd": 602,
+     "nota": ""
+    },
+    {
+     "id": "e2",
+     "tipo": "devolucao",
+     "guia": "2226/142",
+     "data": "2026-10-09",
+     "fio": "30/1 100% CO Org. Gots",
+     "lote": "F0714/1300062605883",
+     "qtd": 25,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1401",
+     "data": "2026-10-02",
+     "artigoId": "a1",
+     "lote": "F0714/1300062605883",
+     "qtd": 258,
+     "nota": ""
+    },
+    {
+     "id": "m2",
+     "guia": "2326/1411",
+     "data": "2026-10-07",
+     "artigoId": "a1",
+     "lote": "F0714/1300062605883",
+     "qtd": 311,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-622",
+   "num": "2026/622",
+   "cliente": "Casa da Malha",
+   "data": "2026-09-24",
+   "ref": "26/33732",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "Interlock 50/1 100% algodão",
+     "qtd": 90,
+     "qprev": 3.0,
+     "fios": [
+      {
+       "fio": "50/1 100% algodão",
+       "pct": 100
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "1509 (Fiporag)",
+     "data": "2026-09-25",
+     "fio": "50/1 100% algodão",
+     "lote": "50-0138-0009",
+     "qtd": 98,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1410",
+     "data": "2026-10-07",
+     "artigoId": "a1",
+     "lote": "50-0138-0009",
+     "qtd": 95,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-623",
+   "num": "2026/623",
+   "cliente": "Casa da Malha",
+   "data": "2026-09-24",
+   "ref": "26/33733",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "Interlock 50/1 100% algodão",
+     "qtd": 123,
+     "qprev": 3.0,
+     "fios": [
+      {
+       "fio": "50/1 100% algodão",
+       "pct": 100
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "1509 (Fiporag)",
+     "data": "2026-09-25",
+     "fio": "50/1 100% algodão",
+     "lote": "50-0138-0009",
+     "qtd": 153.37,
+     "nota": ""
+    },
+    {
+     "id": "e2",
+     "tipo": "devolucao",
+     "guia": "2226/148",
+     "data": "2026-10-14",
+     "fio": "50/1 100% algodão",
+     "lote": "50-0138-0009",
+     "qtd": 13,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1423",
+     "data": "2026-10-09",
+     "artigoId": "a1",
+     "lote": "50-0138-0009",
+     "qtd": 141,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-675",
+   "num": "2026/675",
+   "cliente": "Casa da Malha",
+   "data": "2026-10-20",
+   "ref": "26/38418",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "JERSEY 20/1 100% LINHO",
+     "qtd": 1250,
+     "qprev": 5.0,
+     "fios": [
+      {
+       "fio": "20/1 100% LINHO",
+       "pct": 100
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "GSC26/4077",
+     "data": "2026-10-20",
+     "fio": "20/1 100% LINHO",
+     "lote": "13330015",
+     "qtd": 1331,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1476",
+     "data": "2026-10-23",
+     "artigoId": "a1",
+     "lote": "13330015",
+     "qtd": 611,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-685",
+   "num": "2026/685",
+   "cliente": "Casa da Malha",
+   "data": "2026-10-22",
+   "ref": "26/38054",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "JERSEY 12/1 100% CO OE ORG. GOTS",
+     "qtd": 258,
+     "qprev": 2.0,
+     "fios": [
+      {
+       "fio": "12/1 OE ORG. GOTS",
+       "pct": 100
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "GSC26/4118",
+     "data": "2026-10-22",
+     "fio": "12/1 OE ORG. GOTS",
+     "lote": "F0084/ORG4.523/GOTS",
+     "qtd": 381,
+     "nota": ""
+    }
+   ],
+   "malha": []
+  },
+  {
+   "id": "2026-686",
+   "num": "2026/686",
+   "cliente": "Casa da Malha",
+   "data": "2026-10-22",
+   "ref": "26/38057",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "JERSEY 12/1 100% CO OE ORG. GOTS",
+     "qtd": 40,
+     "qprev": 2.0,
+     "fios": [
+      {
+       "fio": "12/1 OE ORG. GOTS",
+       "pct": 100
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "GSC26/4118",
+     "data": "2026-10-22",
+     "fio": "12/1 OE ORG. GOTS",
+     "lote": "F0084/ORG4.523/GOTS",
+     "qtd": 45,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1475",
+     "data": "2026-10-23",
+     "artigoId": "a1",
+     "lote": "F0084/ORG4.523/GOTS",
+     "qtd": 20,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-625",
+   "num": "2026/625",
+   "cliente": "Brito e Miranda",
+   "data": "2026-09-25",
+   "ref": "22609524",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "Jersey 30/1 Viscose Mescla C/ Licra",
+     "qtd": 1675,
+     "qprev": 2.0,
+     "fios": [
+      {
+       "fio": "30/1 100% Viscose Mescla MV512",
+       "pct": 96.0
+      },
+      {
+       "fio": "22 Elastano",
+       "pct": 4.0
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "2045 (mesclaFio)",
+     "data": "2026-09-25",
+     "fio": "30/1 100% Viscose Mescla MV512",
+     "lote": "3203",
+     "qtd": 1740.48,
+     "nota": ""
+    },
+    {
+     "id": "e2",
+     "tipo": "entrada",
+     "guia": "2026A9/413",
+     "data": "2026-09-25",
+     "fio": "22 Elastano",
+     "lote": "48762",
+     "qtd": 102.6,
+     "nota": ""
+    },
+    {
+     "id": "e3",
+     "tipo": "devolucao",
+     "guia": "2226/141",
+     "data": "2026-10-09",
+     "fio": "30/1 100% Viscose Mescla MV512",
+     "lote": "3203",
+     "qtd": 125,
+     "nota": ""
+    },
+    {
+     "id": "e4",
+     "tipo": "devolucao",
+     "guia": "2226/147",
+     "data": "2026-10-14",
+     "fio": "22 Elastano",
+     "lote": "48762",
+     "qtd": 30,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1385",
+     "data": "2026-09-30",
+     "artigoId": "a1",
+     "lote": "3203 + 48762",
+     "qtd": 225,
+     "nota": "Gulbena"
+    },
+    {
+     "id": "m2",
+     "guia": "2326/1391",
+     "data": "2026-09-30",
+     "artigoId": "a1",
+     "lote": "3203 + 48762",
+     "qtd": 134,
+     "nota": "Gulbena"
+    },
+    {
+     "id": "m3",
+     "guia": "2326/1396",
+     "data": "2026-10-02",
+     "artigoId": "a1",
+     "lote": "3203 + 48762",
+     "qtd": 590,
+     "nota": "Gulbena"
+    },
+    {
+     "id": "m4",
+     "guia": "2326/1409",
+     "data": "2026-10-07",
+     "artigoId": "a1",
+     "lote": "3203 + 48762",
+     "qtd": 736,
+     "nota": "Gulbena"
+    }
+   ]
+  },
+  {
+   "id": "2026-632",
+   "num": "2026/632",
+   "cliente": "Brito e Miranda",
+   "data": "2026-09-30",
+   "ref": "22609719",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "Jersey 16/1 Alg / Linho (S/F)",
+     "qtd": 62,
+     "qprev": 3.0,
+     "fios": [
+      {
+       "fio": "16/1 50% CO / 50% Linho",
+       "pct": 100
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "GT2026A9/426",
+     "data": "2026-09-30",
+     "fio": "16/1 50% CO / 50% Linho",
+     "lote": "47508",
+     "qtd": 67,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1403",
+     "data": "2026-10-06",
+     "artigoId": "a1",
+     "lote": "47508",
+     "qtd": 65,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-633",
+   "num": "2026/633",
+   "cliente": "Brito e Miranda",
+   "data": "2026-09-30",
+   "ref": "22609715",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "Jersey 16/1 Alg / Linho",
+     "qtd": 748,
+     "qprev": 3.0,
+     "fios": [
+      {
+       "fio": "16/1 50% CO / 50% Linho",
+       "pct": 100
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "GT2026A9/426",
+     "data": "2026-09-30",
+     "fio": "16/1 50% CO / 50% Linho",
+     "lote": "47508",
+     "qtd": 841.7,
+     "nota": ""
+    },
+    {
+     "id": "e2",
+     "tipo": "devolucao",
+     "guia": "2226-140",
+     "data": "2026-10-08",
+     "fio": "16/1 50% CO / 50% Linho",
+     "lote": "47508",
+     "qtd": 65,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1402",
+     "data": "2026-10-06",
+     "artigoId": "a1",
+     "lote": "47508",
+     "qtd": 608,
+     "nota": ""
+    },
+    {
+     "id": "m2",
+     "guia": "2326/1414",
+     "data": "2026-10-08",
+     "artigoId": "a1",
+     "lote": "47508",
+     "qtd": 156,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-641",
+   "num": "2026/641",
+   "cliente": "Brito e Miranda",
+   "data": "2026-10-07",
+   "ref": "22608639",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "JERSEY 24/1 70% CO / 30% LI",
+     "qtd": 50,
+     "qprev": 2.0,
+     "fios": [
+      {
+       "fio": "24/1 70/CO / 30%LI",
+       "pct": 100
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "2026A9/435",
+     "data": "2026-10-06",
+     "fio": "24/1 70/CO / 30%LI",
+     "lote": "48796",
+     "qtd": 233,
+     "nota": ""
+    },
+    {
+     "id": "e2",
+     "tipo": "devolucao",
+     "guia": "2226/144",
+     "data": "2026-10-12",
+     "fio": "24/1 70/CO / 30%LI",
+     "lote": "48796",
+     "qtd": 180,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1420",
+     "data": "2026-10-09",
+     "artigoId": "a1",
+     "lote": "48796",
+     "qtd": 54,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-648",
+   "num": "2026/648",
+   "cliente": "Brito e Miranda",
+   "data": "2026-10-08",
+   "ref": "22608715",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "JERSEY 94% LYOCEL / 6% ELASTANO",
+     "qtd": 102,
+     "qprev": 2.0,
+     "fios": [
+      {
+       "fio": "40/1 100% LYOCEL",
+       "pct": 94.0
+      },
+      {
+       "fio": "ELASTANO 22",
+       "pct": 6.0
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "2026A9/440",
+     "data": "2026-10-08",
+     "fio": "40/1 100% LYOCEL",
+     "lote": "48868",
+     "qtd": 100.7,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1426",
+     "data": "2026-10-12",
+     "artigoId": "a1",
+     "lote": "48868",
+     "qtd": 102,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-651",
+   "num": "2026/651",
+   "cliente": "Brito e Miranda",
+   "data": "2026-10-09",
+   "ref": "22608918",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "Jersey 100% CO Mescla 1617",
+     "qtd": 140,
+     "qprev": 2.0,
+     "fios": [
+      {
+       "fio": "24/1 Mescla 1617",
+       "pct": 100
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "",
+     "data": "",
+     "fio": "24/1 Mescla 1617",
+     "lote": "",
+     "qtd": 144,
+     "nota": ""
+    },
+    {
+     "id": "e2",
+     "tipo": "devolucao",
+     "guia": "2226/147",
+     "data": "2026-10-14",
+     "fio": "24/1 Mescla 1617",
+     "lote": "",
+     "qtd": 2,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1437",
+     "data": "2026-10-14",
+     "artigoId": "a1",
+     "lote": "",
+     "qtd": 140,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-652",
+   "num": "2026/652",
+   "cliente": "Brito e Miranda",
+   "data": "2026-10-09",
+   "ref": "22608919",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "RIB 1X1 MESCLA 1617",
+     "qtd": 6,
+     "qprev": 2.0,
+     "fios": [
+      {
+       "fio": "24/1 Mescla 1617",
+       "pct": 100
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "",
+     "data": "",
+     "fio": "24/1 Mescla 1617",
+     "lote": "",
+     "qtd": 10.7,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1436",
+     "data": "2026-10-14",
+     "artigoId": "a1",
+     "lote": "",
+     "qtd": 10.5,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-661",
+   "num": "2026/661",
+   "cliente": "Brito e Miranda",
+   "data": "2026-10-13",
+   "ref": "22610288",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "FELPA AMERICANA 20/1 + 6/1",
+     "qtd": 590,
+     "qprev": 2.0,
+     "fios": [
+      {
+       "fio": "20/1 ALGODÃO PENT",
+       "pct": 56.38
+      },
+      {
+       "fio": "6/1 ALG. CARDADO",
+       "pct": 43.62
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "2026A9/444",
+     "data": "2026-10-12",
+     "fio": "20/1 ALGODÃO PENT",
+     "lote": "48781",
+     "qtd": 350,
+     "nota": ""
+    },
+    {
+     "id": "e2",
+     "tipo": "entrada",
+     "guia": "2026A9/444",
+     "data": "2026-10-12",
+     "fio": "6/1 ALG. CARDADO",
+     "lote": "48670",
+     "qtd": 270,
+     "nota": ""
+    },
+    {
+     "id": "e3",
+     "tipo": "devolucao",
+     "guia": "2226/150",
+     "data": "2026-10-16",
+     "fio": "20/1 ALGODÃO PENT",
+     "lote": "48781",
+     "qtd": 2,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1439",
+     "data": "2026-10-14",
+     "artigoId": "a1",
+     "lote": "48781 + 48670",
+     "qtd": 6.5,
+     "nota": ""
+    },
+    {
+     "id": "m2",
+     "guia": "2326/1447",
+     "data": "2026-10-16",
+     "artigoId": "a1",
+     "lote": "48781 + 48670",
+     "qtd": 585,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-662",
+   "num": "2026/662",
+   "cliente": "Brito e Miranda",
+   "data": "2026-10-15",
+   "ref": "22610285",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "FELPA AMERIC 20/1 MESCLA + 6/1",
+     "qtd": 1828,
+     "qprev": 2.0,
+     "fios": [
+      {
+       "fio": "20/1 CO MESCLA 1602",
+       "pct": 56.38
+      },
+      {
+       "fio": "6/1 ALG. CARDADO",
+       "pct": 43.62
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "2026A9/448",
+     "data": "2026-10-13",
+     "fio": "20/1 CO MESCLA 1602",
+     "lote": "49093",
+     "qtd": 1065.96,
+     "nota": ""
+    },
+    {
+     "id": "e2",
+     "tipo": "entrada",
+     "guia": "2026A9/444",
+     "data": "2026-10-12",
+     "fio": "6/1 ALG. CARDADO",
+     "lote": "48670",
+     "qtd": 843.07,
+     "nota": ""
+    },
+    {
+     "id": "e3",
+     "tipo": "devolucao",
+     "guia": "2226/158",
+     "data": "2026-10-22",
+     "fio": "20/1 CO MESCLA 1602",
+     "lote": "49093",
+     "qtd": 20,
+     "nota": ""
+    },
+    {
+     "id": "e4",
+     "tipo": "devolucao",
+     "guia": "2226/158",
+     "data": "2026-10-22",
+     "fio": "6/1 ALG. CARDADO",
+     "lote": "48670",
+     "qtd": 4,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1446",
+     "data": "2026-10-16",
+     "artigoId": "a1",
+     "lote": "49093 + 48670",
+     "qtd": 203,
+     "nota": ""
+    },
+    {
+     "id": "m2",
+     "guia": "2326/1457",
+     "data": "2026-10-20",
+     "artigoId": "a1",
+     "lote": "49093 + 48670",
+     "qtd": 894,
+     "nota": ""
+    },
+    {
+     "id": "m3",
+     "guia": "2326/1463",
+     "data": "2026-10-21",
+     "artigoId": "a1",
+     "lote": "49093 + 48670",
+     "qtd": 466,
+     "nota": ""
+    },
+    {
+     "id": "m4",
+     "guia": "2326/1469",
+     "data": "2026-10-22",
+     "artigoId": "a1",
+     "lote": "49093 + 48670",
+     "qtd": 265,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-690",
+   "num": "2026/690",
+   "cliente": "Brito e Miranda",
+   "data": "2026-10-22",
+   "ref": "22610405",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "JERSEY DUPLO 100% ALGODÃO",
+     "qtd": 140,
+     "qprev": 2.0,
+     "fios": [
+      {
+       "fio": "30/1 100% CO P/ BRANCO",
+       "pct": 100
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "GT2026A9/466",
+     "data": "2026-10-22",
+     "fio": "30/1 100% CO P/ BRANCO",
+     "lote": "48699",
+     "qtd": 260.2,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1474",
+     "data": "2026-10-23",
+     "artigoId": "a1",
+     "lote": "48699",
+     "qtd": 10,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-587",
+   "num": "2026/587",
+   "cliente": "T M G",
+   "data": "2026-09-08",
+   "ref": "40021616",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "Jersey Risca Linho (14-30'')",
+     "qtd": 118,
+     "qprev": 3.0,
+     "fios": [
+      {
+       "fio": "26/1 100% LINHO (H0008)",
+       "pct": 50.0
+      },
+      {
+       "fio": "26/1 100% LINHO VINTAGE (FF760)",
+       "pct": 50.0
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "7406522163",
+     "data": "2026-10-01",
+     "fio": "26/1 100% LINHO (H0008)",
+     "lote": "CEA 405630",
+     "qtd": 93.27,
+     "nota": ""
+    },
+    {
+     "id": "e2",
+     "tipo": "entrada",
+     "guia": "7406522163",
+     "data": "2026-10-01",
+     "fio": "26/1 100% LINHO VINTAGE (FF760)",
+     "lote": "BTA 611707",
+     "qtd": 59.7,
+     "nota": ""
+    },
+    {
+     "id": "e3",
+     "tipo": "devolucao",
+     "guia": "2226/145",
+     "data": "2026-10-12",
+     "fio": "26/1 100% LINHO (H0008)",
+     "lote": "CEA 405630",
+     "qtd": 33,
+     "nota": ""
+    },
+    {
+     "id": "e4",
+     "tipo": "devolucao",
+     "guia": "2226/145",
+     "data": "2026-10-12",
+     "fio": "26/1 100% LINHO VINTAGE (FF760)",
+     "lote": "BTA 611707",
+     "qtd": 0.3,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1428",
+     "data": "2026-10-12",
+     "artigoId": "a1",
+     "lote": "CEA405630 + BTA 611707",
+     "qtd": 114,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-588",
+   "num": "2026/588",
+   "cliente": "T M G",
+   "data": "2026-09-09",
+   "ref": "40021605",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "JERSEY 70% TENCEL / 30% LINHO",
+     "qtd": 731,
+     "qprev": 3.0,
+     "fios": [
+      {
+       "fio": "16.5 70% TENCEL / 30% LINHO",
+       "pct": 100
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "7406522162",
+     "data": "2026-10-01",
+     "fio": "16.5 70% TENCEL / 30% LINHO",
+     "lote": "OGA 662063",
+     "qtd": 818.2,
+     "nota": ""
+    },
+    {
+     "id": "e2",
+     "tipo": "devolucao",
+     "guia": "2226/145",
+     "data": "2026-10-12",
+     "fio": "16.5 70% TENCEL / 30% LINHO",
+     "lote": "OGA 662063",
+     "qtd": 80,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1429",
+     "data": "2026-10-12",
+     "artigoId": "a1",
+     "lote": "OGA 662063",
+     "qtd": 739,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-635",
+   "num": "2026/635",
+   "cliente": "Luis Azevedo",
+   "data": "2026-10-06",
+   "ref": "2026/3011",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "Rib Seleção 5x3x3x3 Flame",
+     "qtd": 490,
+     "qprev": 3.0,
+     "fios": [
+      {
+       "fio": "24/1 Penteado Org. OCS",
+       "pct": 45.5
+      },
+      {
+       "fio": "24/1 Flame Org. OCS",
+       "pct": 45.5
+      },
+      {
+       "fio": "44 Elastano Creora",
+       "pct": 9.0
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "2026/3338",
+     "data": "2026-10-06",
+     "fio": "24/1 Penteado Org. OCS",
+     "lote": "0641-5240062605647",
+     "qtd": 480.28,
+     "nota": ""
+    },
+    {
+     "id": "e2",
+     "tipo": "entrada",
+     "guia": "2026/3336",
+     "data": "2026-10-02",
+     "fio": "24/1 Flame Org. OCS",
+     "lote": "0641-5242582605879",
+     "qtd": 473.1,
+     "nota": ""
+    },
+    {
+     "id": "e3",
+     "tipo": "devolucao",
+     "guia": "2226/149",
+     "data": "2026-10-15",
+     "fio": "24/1 Penteado Org. OCS",
+     "lote": "0641-5240062605647",
+     "qtd": 260,
+     "nota": ""
+    },
+    {
+     "id": "e4",
+     "tipo": "devolucao",
+     "guia": "2226/149",
+     "data": "2026-10-15",
+     "fio": "24/1 Flame Org. OCS",
+     "lote": "0641-5242582605879",
+     "qtd": 258,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1417",
+     "data": "2026-10-08",
+     "artigoId": "a1",
+     "lote": "0641-5240062605647\n0641-5242582605879",
+     "qtd": 101,
+     "nota": ""
+    },
+    {
+     "id": "m2",
+     "guia": "2326/1433",
+     "data": "2026-10-13",
+     "artigoId": "a1",
+     "lote": "0641-5240062605647\n0641-5242582605879",
+     "qtd": 389,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-640",
+   "num": "2026/640",
+   "cliente": "Luis Azevedo",
+   "data": "2026-10-07",
+   "ref": "2026/3031",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "Felpa Diag. 3x1 Alg./Pes/Elastano",
+     "qtd": 172,
+     "qprev": 2.0,
+     "fios": [
+      {
+       "fio": "30/1 Pent. P/ Cores",
+       "pct": 40.8
+      },
+      {
+       "fio": "Elas 44 Rec. Pes 70",
+       "pct": 14.9
+      },
+      {
+       "fio": "12/1 OE Pes / CO",
+       "pct": 44.3
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "2026/3350",
+     "data": "2026-10-06",
+     "fio": "30/1 Pent. P/ Cores",
+     "lote": "0668-30-1152-0013",
+     "qtd": 79.56,
+     "nota": ""
+    },
+    {
+     "id": "e2",
+     "tipo": "entrada",
+     "guia": "2026/3350",
+     "data": "2026-10-06",
+     "fio": "Elas 44 Rec. Pes 70",
+     "lote": "0029-536/105",
+     "qtd": 16.9,
+     "nota": ""
+    },
+    {
+     "id": "e3",
+     "tipo": "entrada",
+     "guia": "2026/3350",
+     "data": "2026-10-06",
+     "fio": "12/1 OE Pes / CO",
+     "lote": "0052-15010001",
+     "qtd": 98.46,
+     "nota": ""
+    },
+    {
+     "id": "e4",
+     "tipo": "entrada",
+     "guia": "2026/3352",
+     "data": "2026-10-06",
+     "fio": "Elas 44 Rec. Pes 70",
+     "lote": "0029-411/906",
+     "qtd": 23.4,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1418",
+     "data": "2026-10-08",
+     "artigoId": "a1",
+     "lote": "0052-15010001 + 0668-30-1152-0013 + 0029-536/105",
+     "qtd": 6.5,
+     "nota": ""
+    },
+    {
+     "id": "m2",
+     "guia": "2326/1434",
+     "data": "2026-10-13",
+     "artigoId": "a1",
+     "lote": "0052-15010001 + 0668-30-1152-0013 + 0029-411/906",
+     "qtd": 55,
+     "nota": ""
+    },
+    {
+     "id": "m3",
+     "guia": "2326/1441",
+     "data": "2026-10-14",
+     "artigoId": "a1",
+     "lote": "0052-15010001 + 0668-30-1152-0013 + 0029-411/906",
+     "qtd": 71,
+     "nota": ""
+    },
+    {
+     "id": "m4",
+     "guia": "2326/1442",
+     "data": "2026-10-14",
+     "artigoId": "a1",
+     "lote": "0052-15010001 + 0668-30-1152-0013 + 0029-536/105",
+     "qtd": 39.5,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-653",
+   "num": "2026/653",
+   "cliente": "Luis Azevedo",
+   "data": "2026-10-09",
+   "ref": "2026/3065",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "RIB 1X1 97% CO / 3% EA",
+     "qtd": 10,
+     "qprev": 2.0,
+     "fios": [
+      {
+       "fio": "30/1 PENT P/CORES",
+       "pct": 97.0
+      },
+      {
+       "fio": "ELASTANO 22",
+       "pct": 3.0
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "2026/3415",
+     "data": "2026-10-09",
+     "fio": "30/1 PENT P/CORES",
+     "lote": "0668-30-1235-0003",
+     "qtd": 46.8,
+     "nota": ""
+    },
+    {
+     "id": "e2",
+     "tipo": "entrada",
+     "guia": "2026/3415",
+     "data": "2026-10-09",
+     "fio": "ELASTANO 22",
+     "lote": "1164-Z2225-R",
+     "qtd": 48,
+     "nota": ""
+    },
+    {
+     "id": "e3",
+     "tipo": "devolucao",
+     "guia": "2226/146",
+     "data": "2026-10-13",
+     "fio": "30/1 PENT P/CORES",
+     "lote": "0668-30-1235-0003",
+     "qtd": 30,
+     "nota": ""
+    },
+    {
+     "id": "e4",
+     "tipo": "devolucao",
+     "guia": "2226/146",
+     "data": "2026-10-13",
+     "fio": "ELASTANO 22",
+     "lote": "1164-Z2225-R",
+     "qtd": 47.5,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1430",
+     "data": "2026-10-12",
+     "artigoId": "a1",
+     "lote": "0668-30-1235-0003 + 1164-Z2225-R",
+     "qtd": 11,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-645",
+   "num": "2026/645",
+   "cliente": "Luis Azevedo",
+   "data": "2026-10-07",
+   "ref": "2026/3039",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "RIB 1X1 97%CO / 3% EA",
+     "qtd": 57,
+     "qprev": 5.0,
+     "fios": [
+      {
+       "fio": "30/1 ORG. COMPACT",
+       "pct": 97.0
+      },
+      {
+       "fio": "ELASTANO 44",
+       "pct": 3.0
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "2026/3369",
+     "data": "2026-10-07",
+     "fio": "30/1 ORG. COMPACT",
+     "lote": "0641-1302582606166",
+     "qtd": 61.449,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1440",
+     "data": "2026-10-14",
+     "artigoId": "a1",
+     "lote": "0641-1302582606166",
+     "qtd": 57,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-672",
+   "num": "2026/672",
+   "cliente": "Luis Azevedo",
+   "data": "2026-10-19",
+   "ref": "2026/3127",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "RIB 5X2 96% ALG / 4% ELASTANO",
+     "qtd": 120,
+     "qprev": 2.0,
+     "fios": [
+      {
+       "fio": "30/1 PENT ORG GOTS",
+       "pct": 96.0
+      },
+      {
+       "fio": "ELAATANO 44",
+       "pct": 4.0
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "2026/3453",
+     "data": "2026-10-12",
+     "fio": "30/1 PENT ORG GOTS",
+     "lote": "0052-25300007",
+     "qtd": 125,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1467",
+     "data": "2026-10-21",
+     "artigoId": "a1",
+     "lote": "0052/25300007",
+     "qtd": 121,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-679",
+   "num": "2026/679",
+   "cliente": "Luis Azevedo",
+   "data": "2026-10-21",
+   "ref": "2026/3237",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "RIB 5X2 96% ALG. / 4% ELASTANO",
+     "qtd": 120,
+     "qprev": 2.0,
+     "fios": [
+      {
+       "fio": "30/1 ALG. ORG. GOTS",
+       "pct": 96.0
+      },
+      {
+       "fio": "ELASTANO 44",
+       "pct": 4.0
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "2026/3545",
+     "data": "2026-10-16",
+     "fio": "30/1 ALG. ORG. GOTS",
+     "lote": "0052-25300007",
+     "qtd": 131.34,
+     "nota": ""
+    },
+    {
+     "id": "e2",
+     "tipo": "devolucao",
+     "guia": "2226/159",
+     "data": "2026-10-23",
+     "fio": "30/1 ALG. ORG. GOTS",
+     "lote": "0052-25300007",
+     "qtd": 30,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1473",
+     "data": "2026-10-22",
+     "artigoId": "a1",
+     "lote": "0052-25300007",
+     "qtd": 102,
+     "nota": ""
+    },
+    {
+     "id": "m2",
+     "guia": "2326/1468",
+     "data": "2026-10-21",
+     "artigoId": "a1",
+     "lote": "0052-25300007",
+     "qtd": 21,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-646",
+   "num": "2026/646",
+   "cliente": "Luis Azevedo",
+   "data": "2026-10-07",
+   "ref": "2026/3038",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "RIB SELEÇÃO 98% CO / 2% EA",
+     "qtd": 395,
+     "qprev": 2.0,
+     "fios": [
+      {
+       "fio": "30/1 ALG. ORG. OCS",
+       "pct": 98.0
+      },
+      {
+       "fio": "ELASTANO 44",
+       "pct": 2.0
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "2026/3369",
+     "data": "2026-10-07",
+     "fio": "30/1 ALG. ORG. OCS",
+     "lote": "0641-1302582606166",
+     "qtd": 261.471,
+     "nota": ""
+    },
+    {
+     "id": "e2",
+     "tipo": "entrada",
+     "guia": "2026/3475",
+     "data": "2026-10-13",
+     "fio": "30/1 ALG. ORG. OCS",
+     "lote": "0641-1302582606166",
+     "qtd": 151.04,
+     "nota": ""
+    },
+    {
+     "id": "e3",
+     "tipo": "devolucao",
+     "guia": "2226/157",
+     "data": "2026-10-21",
+     "fio": "30/1 ALG. ORG. OCS",
+     "lote": "0641-1302582606166",
+     "qtd": 390,
+     "nota": ""
+    },
+    {
+     "id": "e4",
+     "tipo": "entrada",
+     "guia": "2026/3605",
+     "data": "2026-10-20",
+     "fio": "30/1 ALG. ORG. OCS",
+     "lote": "0641-904657",
+     "qtd": 412,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1466",
+     "data": "2026-10-21",
+     "artigoId": "a1",
+     "lote": "0641-1302582606166",
+     "qtd": 31,
+     "nota": ""
+    },
+    {
+     "id": "m2",
+     "guia": "2326/1472",
+     "data": "2026-10-22",
+     "artigoId": "a1",
+     "lote": "0641-905657",
+     "qtd": 95,
+     "nota": ""
+    },
+    {
+     "id": "m3",
+     "guia": "2326/1480",
+     "data": "2026-10-23",
+     "artigoId": "a1",
+     "lote": "0641-905657",
+     "qtd": 181,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-654",
+   "num": "2026/654",
+   "cliente": "Trimalhas",
+   "data": "2026-10-12",
+   "ref": "50034/1",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "JERSEY 36/1 100% CO ORG",
+     "qtd": 600,
+     "qprev": 2.0,
+     "fios": [
+      {
+       "fio": "36/1 100% CO ORG",
+       "pct": 100
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "2026B014/399",
+     "data": "2026-10-12",
+     "fio": "36/1 100% CO ORG",
+     "lote": "36-1421-0011",
+     "qtd": 666.81,
+     "nota": ""
+    },
+    {
+     "id": "e2",
+     "tipo": "devolucao",
+     "guia": "2226/155",
+     "data": "2026-10-21",
+     "fio": "36/1 100% CO ORG",
+     "lote": "36-1421-0011",
+     "qtd": 60,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1427",
+     "data": "2026-10-12",
+     "artigoId": "a1",
+     "lote": "36-1421-0011",
+     "qtd": 5,
+     "nota": ""
+    },
+    {
+     "id": "m2",
+     "guia": "2326/1443",
+     "data": "2026-10-14",
+     "artigoId": "a1",
+     "lote": "36-1421-0011",
+     "qtd": 339.5,
+     "nota": ""
+    },
+    {
+     "id": "m3",
+     "guia": "2326/1449",
+     "data": "2026-10-16",
+     "artigoId": "a1",
+     "lote": "36-1421-0011",
+     "qtd": 262,
+     "nota": ""
+    }
+   ]
+  },
+  {
+   "id": "2026-663",
+   "num": "2026/663",
+   "cliente": "Trimalhas",
+   "data": "2026-10-15",
+   "ref": "50202/1",
+   "estado": "aberta",
+   "notas": "",
+   "artigos": [
+    {
+     "id": "a1",
+     "nome": "JERSEY 16/1 ALGODÃO / LINHO",
+     "qtd": 415,
+     "qprev": 2.0,
+     "fios": [
+      {
+       "fio": "16/1 50% CO / 50% LINHO",
+       "pct": 100
+      }
+     ]
+    }
+   ],
+   "entradas": [
+    {
+     "id": "e1",
+     "tipo": "entrada",
+     "guia": "2026BO14/419",
+     "data": "2026-10-14",
+     "fio": "16/1 50% CO / 50% LINHO",
+     "lote": "DTEX16COLIN",
+     "qtd": 439.5,
+     "nota": ""
+    },
+    {
+     "id": "e2",
+     "tipo": "devolucao",
+     "guia": "2226/155",
+     "data": "2026-10-21",
+     "fio": "16/1 50% CO / 50% LINHO",
+     "lote": "DTEX16COLIN",
+     "qtd": 1,
+     "nota": ""
+    }
+   ],
+   "malha": [
+    {
+     "id": "m1",
+     "guia": "2326/1450",
+     "data": "2026-10-16",
+     "artigoId": "a1",
+     "lote": "DTEX16COLIN",
+     "qtd": 6.5,
+     "nota": ""
+    },
+    {
+     "id": "m2",
+     "guia": "2326/1465",
+     "data": "2026-10-21",
+     "artigoId": "a1",
+     "lote": "DTEX16COLIN",
+     "qtd": 415,
+     "nota": ""
+    }
+   ]
+  }
+ ]
+}
