@@ -420,7 +420,7 @@ function bar(p){const w=Math.max(0,Math.min(100,p));return '<span class="bar"><i
 function opts(list,sel,first){return (first!=null?'<option value="">'+esc(first)+'</option>':'')+list.map(x=>{const v=typeof x==='object'?x.v:x,l=typeof x==='object'?x.l:x;return '<option value="'+esc(v)+'"'+(v===sel?' selected':'')+'>'+esc(l)+'</option>'}).join('')}
 const orderSort=(a,b)=>(b.o.data||'').localeCompare(a.o.data||'')||coll(b.o.num,a.o.num);
 function sortedRows(filterFn){return [...S.orders.values()].filter(filterFn||(()=>true)).map(o=>({o,c:calc(o)})).sort(orderSort)}
-function empty(msg){return '<div class="card"><div class="empty"><h2>Ainda não há encomendas</h2><div>'+msg+'</div><div class="row"><button class="btn pri" data-act="new">Nova encomenda</button><label class="btn">Importar cópia (JSON)<input type="file" accept=".json,application/json" data-act="import" hidden></label></div></div></div>'}
+function empty(msg){return '<div class="card"><div class="empty"><h2>Ainda não há encomendas</h2><div>'+msg+'</div><div class="row"><button class="btn pri" data-act="new">Nova encomenda</button><label class="btn">Importar cópia (JSON ou CSV)<input type="file" accept=".json,.csv,application/json,text/csv" data-act="import" hidden></label></div></div></div>'}
 
 /* ============ vista: encomendas ============ */
 function viewList(v){
@@ -709,7 +709,7 @@ function viewQuebras(v){
 function viewDados(v){
   v.innerHTML='<div class="pagehead"><div><h1>Dados e cálculos</h1></div></div><div class="two">'+
   '<div class="card"><div class="hd"><h2>Cópia de segurança</h2></div><div class="bd stack"><div class="muted">'+(S.mode==='supabase'?'Os dados ficam guardados no seu projeto Supabase e são partilhados por todos os dispositivos com sessão iniciada.':'Os dados ficam só neste navegador (Supabase não configurado). Faça cópias com regularidade.')+' Hoje há '+S.orders.size+' encomendas.</div>'+
-  '<div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn pri" type="button" data-act="export">Exportar tudo (JSON)</button><label class="btn">Importar cópia (JSON)<input type="file" accept=".json,application/json" data-act="import" hidden></label></div>'+
+  '<div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn pri" type="button" data-act="export">Exportar tudo (JSON)</button><button class="btn" type="button" data-act="export-csv-bak">Cópia completa (CSV)</button><button class="btn" type="button" data-act="export-csv-enc">Exportar encomendas (CSV)</button><button class="btn" type="button" data-act="export-csv-mov">Exportar movimentos (CSV)</button><label class="btn">Importar cópia (JSON ou CSV)<input type="file" accept=".json,.csv,application/json,text/csv" data-act="import" hidden></label></div>'+
   '<div class="muted" style="font-size:12.5px">Ao importar, as encomendas com o mesmo identificador são substituídas pelas da cópia. As restantes não são apagadas.</div></div></div>'+
   '<div class="card"><div class="hd"><h2>Como são calculados os valores</h2></div><div class="bd stack" style="max-width:90ch">'+
   '<p style="margin:0"><b>Consumo de fio da malha</b> = malha entregue do artigo × % do fio no artigo. É o fio que a malha realmente leva.</p>'+
@@ -730,13 +730,91 @@ function saveFile(filename,data){
   setTimeout(()=>URL.revokeObjectURL(url),2000);toast('Ficheiro guardado');
 }
 function csvCell(x){if(x==null)return '';if(typeof x==='number')return String(Math.round(x*10000)/10000).replace('.',',');const s=String(x);return /[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}
+function csvFile(name,head,rows){
+  const L=[head.join(';')].concat(rows.map(r=>r.map(csvCell).join(';')));
+  saveFile(name,'\ufeff'+L.join('\r\n'));
+}
+function exportCsvEnc(){
+  const head=['Encomenda','Cliente','Ref. cliente','Data','Estado','Artigos','Malha encomendada (kg)','Malha entregue (kg)','Em falta (kg)','Fio entrada (kg)','Fio devolvido (kg)','Fio líquido (kg)','Stock fio teórico (kg)','Quebra real (%)','Quebra prevista (%)','Desvio (pp)','Fio devolvido?','Por devolver (kg)','Notas'];
+  const rows=[...S.orders.values()].sort((x,y)=>String(y.data||'').localeCompare(String(x.data||''))).map(o=>{
+    const c=calc(o),T=c.T,d=devInfo(c,o);
+    return [o.num,o.cliente,o.ref,o.data,o.estado==='fechada'?'Fechada':'Aberta',o.artigos.map(a=>a.nome).join(' | '),T.qtd,T.malha,Math.max(0,T.qtd-T.malha),T.entradas,T.devolucoes,T.liq,T.stock,T.real,T.prev,T.desvio,d.l,d.kg,o.notas];
+  });
+  csvFile('gestao-fios-encomendas-'+today()+'.csv',head,rows);
+}
+function exportCsvMov(){
+  const head=['Encomenda','Cliente','Ref. cliente','Tipo','Guia','Data','Artigo','Fio','Lote','Qtd (kg)','Nota'];
+  const rows=[];
+  [...S.orders.values()].sort((x,y)=>String(x.num||'').localeCompare(String(y.num||''))).forEach(o=>{
+    const art=id=>(o.artigos.find(a=>a.id===id)||{}).nome||'';
+    o.entradas.forEach(e=>rows.push([o.num,o.cliente,o.ref,e.tipo==='devolucao'?'Devolução de fio':'Entrada de fio',e.guia,e.data,'',e.fio,e.lote,num(e.qtd),e.nota]));
+    o.malha.forEach(m=>rows.push([o.num,o.cliente,o.ref,'Saída de malha',m.guia,m.data,art(m.artigoId),'',m.lote,num(m.qtd),m.nota]));
+  });
+  csvFile('gestao-fios-movimentos-'+today()+'.csv',head,rows);
+}
+
+/* ===== cópia completa em CSV (exportar e importar) ===== */
+const BAK_HEAD=['Registo','ID encomenda','N.º encomenda','Cliente','Ref. cliente','Data encomenda','Estado','Notas','ID linha','ID artigo','Artigo','Qtd (kg)','Quebra prev. (%)','Fio','% no artigo','Guia','Data movimento','Lote','Nota'];
+const rawN=v=>(v==null||v==='')?'':String(v).replace('.',',');
+function exportCsvBak(){
+  const R=[];
+  [...S.orders.values()].forEach(o=>{
+    const id=o.id;
+    R.push(['ENCOMENDA',id,o.num,o.cliente,o.ref,o.data,o.estado,o.notas,'','','','','','','','','','','']);
+    o.artigos.forEach(a=>{
+      R.push(['ARTIGO',id,'','','','','','',a.id,'',a.nome,rawN(a.qtd),rawN(a.qprev),'','','','','','']);
+      a.fios.forEach(f=>R.push(['FIO',id,'','','','','','','',a.id,'','','',f.fio,rawN(f.pct),'','','','']));
+    });
+    o.entradas.forEach(e=>R.push([e.tipo==='devolucao'?'DEVOLUCAO':'ENTRADA',id,'','','','','','',e.id,'','',rawN(e.qtd),'',e.fio,'',e.guia,e.data,e.lote,e.nota]));
+    o.malha.forEach(m=>R.push(['MALHA',id,'','','','','','',m.id,m.artigoId,'',rawN(m.qtd),'','','',m.guia,m.data,m.lote,m.nota]));
+  });
+  const q=x=>{const t=x==null?'':String(x);return /[;"\r\n]/.test(t)?'"'+t.replace(/"/g,'""')+'"':t};
+  saveFile('gestao-fios-copia-completa-'+today()+'.csv','﻿'+[BAK_HEAD].concat(R).map(r=>r.map(q).join(';')).join('\r\n'));
+}
+function parseCsv(txt){
+  txt=txt.replace(/^﻿/,'');
+  const first=txt.split(/\r?\n/)[0]||'';const sep=(first.split(';').length>=first.split(',').length)?';':',';
+  const rows=[];let row=[],cur='',q=false;
+  for(let i=0;i<txt.length;i++){
+    const c=txt[i];
+    if(q){if(c==='"'){if(txt[i+1]==='"'){cur+='"';i++}else q=false}else cur+=c}
+    else if(c==='"')q=true;
+    else if(c===sep){row.push(cur);cur=''}
+    else if(c==='\n'||c==='\r'){if(c==='\r'&&txt[i+1]==='\n')i++;row.push(cur);cur='';rows.push(row);row=[]}
+    else cur+=c;
+  }
+  if(cur!==''||row.length){row.push(cur);rows.push(row)}
+  return rows.filter(r=>r.some(x=>x!==''));
+}
+function csvToOrders(txt){
+  const rows=parseCsv(txt);if(rows.length<2)throw new Error('vazio');
+  const h=rows[0].map(x=>x.trim());
+  if(h[0]!=='Registo'||h.length<BAK_HEAD.length)throw new Error('formato');
+  const num=v=>{v=String(v==null?'':v).trim().replace(/\s/g,'');if(v==='')return '';const n=Number(v.replace(',','.'));return isFinite(n)?n:''};
+  const dt=v=>{v=String(v||'').trim();const m=v.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/);return m?m[3]+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0'):v};
+  const M=new Map();
+  rows.slice(1).forEach(c=>{
+    const [tp,oid,onum,cli,ref,odata,est,notas,lid,aid,anome,qtd,qprev,fio,pct,guia,mdata,lote,nota]=c.map(x=>x==null?'':x);
+    if(!oid)return;
+    const t=tp.trim().toUpperCase();
+    if(t==='ENCOMENDA'){M.set(oid,{id:oid,num:onum,cliente:cli,data:dt(odata),ref:ref,estado:(est||'aberta').toLowerCase().startsWith('f')?'fechada':'aberta',notas:notas,artigos:[],entradas:[],malha:[]});return}
+    const o=M.get(oid);if(!o)return;
+    if(t==='ARTIGO')o.artigos.push({id:lid,nome:anome,qtd:num(qtd),qprev:num(qprev),fios:[]});
+    else if(t==='FIO'){const a=o.artigos.find(x=>x.id===aid);if(a)a.fios.push({fio:fio,pct:num(pct)})}
+    else if(t==='ENTRADA'||t==='DEVOLUCAO')o.entradas.push({id:lid,tipo:t==='ENTRADA'?'entrada':'devolucao',guia:guia,data:dt(mdata),fio:fio,lote:lote,qtd:num(qtd),nota:nota});
+    else if(t==='MALHA')o.malha.push({id:lid,guia:guia,data:dt(mdata),artigoId:aid,lote:lote,qtd:num(qtd),nota:nota});
+  });
+  return [...M.values()];
+}
 async function importFile(file){
   if(!file)return;
   try{
-    const j=JSON.parse(await file.text());const list=Array.isArray(j)?j:(j.encomendas||[]);
+    const txt=await file.text();let list;
+    if(/\.csv$/i.test(file.name)||txt.replace(/^\ufeff/,'').startsWith('Registo'))list=csvToOrders(txt);
+    else{const j=JSON.parse(txt);list=Array.isArray(j)?j:(j.encomendas||[])}
     let n=0;list.forEach(r=>{if(r&&r.id&&Array.isArray(r.artigos)){const o=normalize(clone(r));S.orders.set(o.id,o);scheduleSave(o.id);n++}});
     toast(n?n+' encomendas importadas':'O ficheiro não tem encomendas válidas');renderView();
-  }catch(e){toast('Ficheiro inválido. Use uma cópia exportada por esta app.')}
+  }catch(e){toast('Ficheiro inválido. Use uma cópia exportada por esta app (JSON ou CSV de cópia completa).')}
 }
 
 /* ============ devolução de fio (estado) ============ */
@@ -832,6 +910,9 @@ root.addEventListener('click',e=>{
     toast('Encomenda eliminada',()=>{const r=normalize(JSON.parse(snap));S.orders.set(r.id,r);scheduleSave(r.id);renderView()});
   }
   else if(a==='export')saveFile('gestao-fios-encomendas-copia-'+today()+'.json',JSON.stringify({versao:1,exportado:new Date().toISOString(),encomendas:[...S.orders.values()]},null,1));
+  else if(a==='export-csv-bak')exportCsvBak();
+  else if(a==='export-csv-enc')exportCsvEnc();
+  else if(a==='export-csv-mov')exportCsvMov();
   else if(a==='csv'&&S.csv){const L=[S.csv.head.join(';')].concat(S.csv.rows.map(r=>r.map(csvCell).join(';')));saveFile(S.csv.name,'﻿'+L.join('\r\n'))}
 });
 root.addEventListener('keydown',e=>{
