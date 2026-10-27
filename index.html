@@ -32,7 +32,7 @@
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.45;margin:0}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--surface);z-index:30}
 button,input,select,textarea{font:inherit;color:inherit}
-.wrap{max-width:1280px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:2600px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 /* barra */
 .top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
 .top .wrap{display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding-block:10px}
@@ -88,9 +88,13 @@ h3{font-size:12px;margin:0;text-transform:uppercase;letter-spacing:.06em;color:v
 .seg button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent)}
 .chk{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer}
 /* tabelas */
-.tw{overflow-x:auto}
+.tw{overflow:visible}
+.tw table{table-layout:auto;width:100%}
+.tw td,.tw th{min-width:0}
+.tw input.cell,.tw select.cell,.tw textarea.cell{width:100%;min-width:0}
+@media (max-width:1300px){th{padding:6px 5px;font-size:10.5px;letter-spacing:.02em}td{padding:5px 5px;font-size:12.5px}.cell{padding:5px 4px}}
 table{border-collapse:collapse;width:100%}
-th{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap;background:var(--surface2)}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:normal;background:var(--surface2)}
 td{padding:7px 10px;border-bottom:1px solid var(--line2);vertical-align:middle}
 tr:last-child td{border-bottom:0}
 .r{text-align:right}th.r{text-align:right}
@@ -99,14 +103,18 @@ tr:last-child td{border-bottom:0}
 .tbl tbody tr[data-go]:hover td{background:var(--surface2)}
 .tbl .grp td{background:var(--surface2);font-weight:600;border-top:1px solid var(--line)}
 .tbl .tot td{font-weight:600;background:var(--surface2);border-top:1px solid var(--line)}
-.enc{font-family:var(--f-mono);font-weight:500;white-space:nowrap}
+.enc{font-family:var(--f-mono);font-weight:500;white-space:normal;overflow-wrap:anywhere}
+.enc a{white-space:nowrap}
+.refc{white-space:nowrap;overflow-wrap:normal}
+@media (max-width:1100px){.tbl th,.tbl td{padding:5px 3px;font-size:11.5px}.tbl .num{font-size:11.5px}.pill{font-size:10.5px;padding:2px 5px}.bar{min-width:24px}}
+@media (max-width:760px){.tbl,.tbl tbody,.tbl tr,.tbl td{font-size:10.5px}.tbl th,.tbl td{padding:4px 2px}}
 .enc a{color:var(--accent);text-decoration:none}
-.trunc{max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.bar{display:block;height:4px;border-radius:2px;background:var(--line2);margin-top:4px;min-width:70px;overflow:hidden}
+.trunc{white-space:normal;overflow-wrap:anywhere}
+.bar{display:block;height:4px;border-radius:2px;background:var(--line2);margin-top:4px;min-width:40px;overflow:hidden}
 .bar i{display:block;height:100%;background:var(--accent)}
 .bar i.full{background:var(--ok)}.bar i.over{background:var(--warn)}
 .tone-ok{color:var(--ok)}.tone-warn{color:var(--warn)}.tone-bad{color:var(--bad)}
-.pill{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.pill{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11.5px;font-weight:600;white-space:normal}
 .pill.a{background:var(--accent-soft);color:var(--accent)}
 .pill.f{background:var(--line2);color:var(--muted)}
 .pill.w{background:var(--warn-soft);color:var(--warn)}
@@ -160,9 +168,9 @@ details.how p{margin:8px 0 0;max-width:80ch}
 .login .err{color:var(--bad);font-size:13px;min-height:18px}
 /* impressão: só o conteúdo de #printarea é impresso */
 #printarea{display:none}
+@page{size:A4 portrait;margin:10mm}
+@page doc{size:A4 portrait;margin:10mm}
 @page label{size:A5 portrait;margin:10mm}
-@page doc{size:A4 portrait;margin:12mm}
-.print-doc{page:doc}.print-label{page:label}
 @media print{
   body.printing{background:#fff;color:#000;font-size:11px}
   body.printing::before{display:none}
@@ -172,8 +180,12 @@ details.how p{margin:8px 0 0;max-width:80ch}
   .print-doc h1{font-size:18pt;margin:0 0 2px}
   .print-doc .psub{font-size:9pt;color:#444;margin-bottom:8px}
   .print-doc h2{font-size:11.5pt;margin:14px 0 4px;break-after:avoid}
-  table.pt{width:100%;border-collapse:collapse;font-size:8.5pt}
-  .pt th,.pt td{border:1px solid #888;padding:3px 5px;text-align:left;vertical-align:top;white-space:normal;background:#fff;color:#000;font-size:8.5pt;text-transform:none;letter-spacing:0}
+  table.pt{width:100%;max-width:100%;table-layout:auto;border-collapse:collapse;font-size:8pt}
+  body.printing,body.printing html{width:auto;overflow:visible}
+  .pt{page-break-inside:auto}.pt thead{display:table-header-group}
+  .print-doc{width:100%;max-width:100%;overflow:visible;page:doc}
+  .print-label{page:label}
+  .pt th,.pt td{border:1px solid #888;padding:3px 5px;text-align:left;vertical-align:top;white-space:normal;overflow-wrap:anywhere;word-break:break-word;background:#fff;color:#000;font-size:8pt;text-transform:none;letter-spacing:0}
   .pt th{background:#e8e8e8;font-weight:700}
   .pt .r{text-align:right}
   .pt tr{break-inside:avoid}
@@ -439,7 +451,7 @@ function viewList(v){
    '<div class="seg" role="group" aria-label="Estado">'+[['aberta','Abertas'],['fechada','Fechadas'],['','Todas']].map(x=>'<button type="button" data-est="'+x[0]+'" aria-pressed="'+(F.est===x[0])+'">'+x[1]+'</button>').join('')+'</div></div>'+
   '<div class="card tw"><table class="tbl"><thead><tr><th>Enc.</th><th>Cliente</th><th>Ref. cliente</th><th>Data</th><th>Artigo</th><th class="r">Encomendado</th><th class="r">Entregue</th><th class="r">Em falta</th><th class="r">Stock fio</th><th class="r">Quebra real</th><th class="r">Prevista</th><th>Estado</th><th>Fio devolvido</th></tr></thead><tbody>'+
   (rows.length?rows.map(r=>{const o=r.o,T=r.c.T,t=o.estado==='fechada'?tone(T.desvio):'';
-    return '<tr data-go="'+esc(o.id)+'" tabindex="0"><td class="enc"><a href="#enc-'+esc(o.id)+'">'+esc(o.num||'(sem número)')+'</a></td><td>'+esc(o.cliente)+'</td><td class="enc">'+esc(o.ref||'—')+'</td><td class="muted">'+fdate(o.data)+'</td>'+
+    return '<tr data-go="'+esc(o.id)+'" tabindex="0"><td class="enc"><a href="#enc-'+esc(o.id)+'">'+esc(o.num||'(sem número)')+'</a></td><td>'+esc(o.cliente)+'</td><td class="enc refc">'+esc(o.ref||'—')+'</td><td class="muted">'+fdate(o.data)+'</td>'+
     '<td><div class="trunc" title="'+esc(o.artigos.map(a=>a.nome).join(' · '))+'">'+esc(o.artigos.map(a=>a.nome).filter(Boolean).join(' · ')||'—')+'</div>'+(o.artigos.length>1?'<span class="muted" style="font-size:12px">'+o.artigos.length+' artigos</span>':'')+'</td>'+
     '<td class="num">'+fkg(T.qtd)+'</td><td class="num">'+fkg(T.malha)+bar(T.entPct)+'</td><td class="num">'+fkg(T.faltaMalha)+'</td>'+
     '<td class="num'+(T.falta>0.05?' tone-bad':'')+'">'+(o.estado==='fechada'?'—':fkg(T.falta>0.05?-T.falta:T.stock))+'</td>'+
@@ -506,7 +518,7 @@ function renderArt(){
    '<div class="fld"><label>Qtd enc. (kg)</label>'+I('a',a.id,'qtd',a.qtd,{t:'n',label:'Quantidade encomendada'})+'</div>'+
    '<div class="fld"><label>Quebra prev. (%)</label>'+I('a',a.id,'qprev',a.qprev,{t:'n',label:'Quebra prevista'})+'</div>'+
    '<div><button class="x" type="button" title="Eliminar artigo" aria-label="Eliminar artigo" data-del="art" data-id="'+esc(a.id)+'">✕</button></div></div>'+
-   '<div class="tw"><table class="ed"><thead><tr><th>Fio</th><th class="r" style="width:110px">% no artigo</th><th style="width:36px"></th></tr></thead><tbody>'+
+   '<div class="tw"><table class="ed"><thead><tr><th>Fio</th><th class="r" style="width:8%">% no artigo</th><th style="width:3%"></th></tr></thead><tbody>'+
    a.fios.map((f,i)=>'<tr><td>'+I('f',a.id,'fio',f.fio,{i:i,list:'dl-fios',ph:'Ex.: 30/1 100% Viscose Mescla',label:'Fio'})+'</td><td>'+I('f',a.id,'pct',f.pct,{i:i,t:'n',label:'Percentagem do fio'})+'</td><td><button class="x" type="button" aria-label="Remover fio" data-del="fio" data-id="'+esc(a.id)+'" data-i="'+i+'">✕</button></td></tr>').join('')+
    '</tbody></table></div><div style="display:flex;gap:12px;align-items:center;padding:6px 12px 10px"><button class="btn sm" type="button" data-add="fio" data-id="'+esc(a.id)+'">+ Fio</button>'+sumChip(a)+'</div></div>').join(''):'<div class="empty">Sem artigos. Adicione o primeiro artigo da encomenda.</div>')+'</div>';
 }
@@ -516,7 +528,7 @@ function renderMov(){
   const artList=o.artigos.map(a=>({v:a.id,l:a.nome||'(sem nome)'}));
   $('#sec-mov').innerHTML='<div class="hd"><h2>Movimentos</h2><span class="muted">Fio entregue pelo cliente, fio devolvido e malha entregue.</span></div><div class="bd stack">'+
   '<div><div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap"><h3>Entradas e devoluções de fio</h3><span class="sp" style="flex:1"></span><button class="btn sm" type="button" data-add="ent">+ Entrada de fio</button><button class="btn sm" type="button" data-add="dev">+ Devolução de fio</button><button class="btn sm" type="button" data-print="labels">Imprimir etiquetas A5</button></div>'+
-  '<div class="tw card" style="box-shadow:none"><table class="ed"><thead><tr><th style="width:130px">Tipo</th><th style="width:140px">Guia</th><th style="width:140px">Data</th><th style="min-width:220px">Fio</th><th style="width:130px">Lote</th><th class="r" style="width:110px">Qtd (kg)</th><th style="min-width:120px">Nota</th><th style="width:96px"></th><th style="width:36px"></th></tr></thead><tbody>'+
+  '<div class="tw card" style="box-shadow:none"><table class="ed"><thead><tr><th style="width:11%">Tipo</th><th style="width:15%">Guia</th><th style="width:13%">Data</th><th style="width:20%">Fio</th><th style="width:17%">Lote</th><th class="r" style="width:10%">Qtd (kg)</th><th style="width:7%">Nota</th><th style="width:6%"></th><th style="width:3%"></th></tr></thead><tbody>'+
   (o.entradas.length?o.entradas.map(e=>'<tr class="'+(e.tipo==='devolucao'?'dev':'')+'">'+
     '<td>'+SEL('e',e.id,'tipo',e.tipo==='devolucao'?'devolucao':'entrada',[{v:'entrada',l:'Entrada'},{v:'devolucao',l:'Devolução'}],{label:'Tipo'})+'</td>'+
     '<td>'+I('e',e.id,'guia',e.guia,{label:'Guia'})+'</td><td>'+I('e',e.id,'data',e.data,{t:'d',label:'Data'})+'</td>'+
@@ -525,7 +537,7 @@ function renderMov(){
     '<td><button class="x" type="button" aria-label="Eliminar linha" data-del="ent" data-id="'+esc(e.id)+'">✕</button></td></tr>').join(''):'<tr><td colspan="9" class="muted" style="padding:14px 10px">Sem movimentos de fio. Use “+ Entrada de fio” quando o cliente entregar fio.</td></tr>')+
   '</tbody></table></div></div>'+
   '<div><div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap"><h3>Saídas de malha</h3><span style="flex:1"></span><button class="btn sm" type="button" data-add="mal">+ Saída de malha</button></div>'+
-  '<div class="tw card" style="box-shadow:none"><table class="ed"><thead><tr><th style="width:140px">Guia</th><th style="width:140px">Data</th><th style="min-width:200px">Artigo</th><th style="min-width:130px">Lote(s) de fio</th><th class="r" style="width:110px">Qtd (kg)</th><th style="min-width:120px">Nota</th><th style="width:36px"></th></tr></thead><tbody>'+
+  '<div class="tw card" style="box-shadow:none"><table class="ed"><thead><tr><th style="width:13%">Guia</th><th style="width:14%">Data</th><th style="width:24%">Artigo</th><th style="width:22%">Lote(s) de fio</th><th class="r" style="width:8%">Qtd (kg)</th><th style="width:14%">Nota</th><th style="width:5%"></th></tr></thead><tbody>'+
   (o.malha.length?o.malha.map(m=>'<tr><td>'+I('m',m.id,'guia',m.guia,{label:'Guia'})+'</td><td>'+I('m',m.id,'data',m.data,{t:'d',label:'Data'})+'</td>'+
     '<td>'+SEL('m',m.id,'artigoId',m.artigoId||'',[{v:'',l:'— escolher artigo —'},...artList],{label:'Artigo'})+'</td>'+
     '<td>'+I('m',m.id,'lote',m.lote,{list:'dl-lotes',ph:'Ex.: 3203 + 48762',label:'Lotes'})+'</td><td>'+I('m',m.id,'qtd',m.qtd,{t:'n',label:'Quantidade kg'})+'</td><td>'+I('m',m.id,'nota',m.nota,{label:'Nota'})+'</td>'+
@@ -742,9 +754,12 @@ function devInfo(c,o){
 function devPill(d){return '<span class="pill '+d.k+'"'+(d.kg>0?' title="Por devolver (teórico): '+fkg(d.kg)+' kg"':'')+'>'+esc(d.l)+(d.kg>0?' · '+fkg(d.kg)+' kg':'')+'</span>'}
 
 /* ============ impressão ============ */
-function doPrint(html){
+function doPrint(html,size){
   const p=$('#printarea');p.innerHTML=html;document.body.classList.add('printing');
-  const done=()=>{document.body.classList.remove('printing');p.innerHTML='';window.removeEventListener('afterprint',done)};
+  const st=document.createElement('style');st.id='pagestyle';
+  st.textContent='@page{size:'+(size==='A5'?'A5 portrait;margin:10mm':'A4 portrait;margin:10mm')+'}';
+  document.head.appendChild(st);
+  const done=()=>{document.body.classList.remove('printing');p.innerHTML='';st.remove();window.removeEventListener('afterprint',done)};
   window.addEventListener('afterprint',done);
   setTimeout(()=>window.print(),80);
 }
@@ -786,12 +801,12 @@ function orderPrintHTML(o){
 }
 function onPrint(kind,el){
   const o=curOrder();if(!o)return;
-  if(kind==='order')doPrint(orderPrintHTML(o));
-  else if(kind==='label'){const e=o.entradas.find(x=>x.id===el.dataset.id);if(e)doPrint(labelHTML(o,e))}
+  if(kind==='order')doPrint(orderPrintHTML(o),'A4');
+  else if(kind==='label'){const e=o.entradas.find(x=>x.id===el.dataset.id);if(e)doPrint(labelHTML(o,e),'A5')}
   else if(kind==='labels'){
     const L=o.entradas.filter(e=>e.tipo!=='devolucao');
     if(!L.length){toast('Não há entradas de fio para imprimir');return}
-    doPrint(L.map(e=>labelHTML(o,e)).join(''));
+    doPrint(L.map(e=>labelHTML(o,e)).join(''),'A5');
   }
 }
 
