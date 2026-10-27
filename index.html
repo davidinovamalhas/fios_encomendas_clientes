@@ -158,6 +158,38 @@ details.how p{margin:8px 0 0;max-width:80ch}
 .login{max-width:380px;margin:60px auto}
 .login form{display:flex;flex-direction:column;gap:12px}
 .login .err{color:var(--bad);font-size:13px;min-height:18px}
+/* impressão: só o conteúdo de #printarea é impresso */
+#printarea{display:none}
+@page label{size:A5 portrait;margin:10mm}
+@page doc{size:A4 portrait;margin:12mm}
+.print-doc{page:doc}.print-label{page:label}
+@media print{
+  body.printing{background:#fff;color:#000;font-size:11px}
+  body.printing::before{display:none}
+  body.printing>*:not(#printarea){display:none!important}
+  body.printing #printarea{display:block!important}
+  .print-doc{font-family:Arial,Helvetica,sans-serif;color:#000}
+  .print-doc h1{font-size:18pt;margin:0 0 2px}
+  .print-doc .psub{font-size:9pt;color:#444;margin-bottom:8px}
+  .print-doc h2{font-size:11.5pt;margin:14px 0 4px;break-after:avoid}
+  table.pt{width:100%;border-collapse:collapse;font-size:8.5pt}
+  .pt th,.pt td{border:1px solid #888;padding:3px 5px;text-align:left;vertical-align:top;white-space:normal;background:#fff;color:#000;font-size:8.5pt;text-transform:none;letter-spacing:0}
+  .pt th{background:#e8e8e8;font-weight:700}
+  .pt .r{text-align:right}
+  .pt tr{break-inside:avoid}
+  .pw{font-size:8.5pt;margin:2px 0}
+  .lbl{height:186mm;border:3px solid #000;padding:8mm;display:flex;flex-direction:column;gap:4mm;break-after:page;page-break-after:always;overflow:hidden;font-family:Arial,Helvetica,sans-serif;color:#000;box-sizing:border-box}
+  .lbl:last-child{break-after:auto;page-break-after:auto}
+  .lbl .tt{font-size:13pt;font-weight:700;letter-spacing:.12em;text-transform:uppercase;border-bottom:3px solid #000;padding-bottom:3mm}
+  .lbl .k{font-size:10pt;text-transform:uppercase;letter-spacing:.08em;color:#444}
+  .lbl .big{font-size:24pt;font-weight:700;line-height:1.1;overflow-wrap:anywhere}
+  .lbl .mid{font-size:16pt;font-weight:600;line-height:1.2;overflow-wrap:anywhere}
+  .lbl .kg{font-size:46pt;font-weight:700;line-height:1}
+  .lbl .row{border-bottom:1px solid #999;padding-bottom:2mm}
+  .lbl .two{display:grid;grid-template-columns:1fr 1fr;gap:6mm}
+  .lbl .fill{margin-top:auto;display:grid;grid-template-columns:1fr 1fr;gap:6mm;font-size:12pt}
+  .lbl .fill div{border-bottom:2px solid #000;padding-top:10mm}
+}
 </style>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -176,6 +208,7 @@ details.how p{margin:8px 0 0;max-width:80ch}
 </div></header>
 <main class="wrap"><div id="view"><div class="loading">A carregar encomendas…</div></div></main>
 <div id="toast" hidden></div>
+<div id="printarea" aria-hidden="true"></div>
 
 <script>
 (function(){
@@ -404,13 +437,13 @@ function viewList(v){
   '<div class="filters"><input type="search" id="fq" placeholder="Pesquisar encomenda, cliente, artigo…" value="'+esc(F.q)+'" aria-label="Pesquisar">'+
    '<select id="fcli" aria-label="Cliente">'+opts(allClients(),F.cli,'Todos os clientes')+'</select>'+
    '<div class="seg" role="group" aria-label="Estado">'+[['aberta','Abertas'],['fechada','Fechadas'],['','Todas']].map(x=>'<button type="button" data-est="'+x[0]+'" aria-pressed="'+(F.est===x[0])+'">'+x[1]+'</button>').join('')+'</div></div>'+
-  '<div class="card tw"><table class="tbl"><thead><tr><th>Enc.</th><th>Cliente</th><th>Data</th><th>Artigo</th><th class="r">Encomendado</th><th class="r">Entregue</th><th class="r">Em falta</th><th class="r">Stock fio</th><th class="r">Quebra real</th><th class="r">Prevista</th><th>Estado</th></tr></thead><tbody>'+
+  '<div class="card tw"><table class="tbl"><thead><tr><th>Enc.</th><th>Cliente</th><th>Ref. cliente</th><th>Data</th><th>Artigo</th><th class="r">Encomendado</th><th class="r">Entregue</th><th class="r">Em falta</th><th class="r">Stock fio</th><th class="r">Quebra real</th><th class="r">Prevista</th><th>Estado</th><th>Fio devolvido</th></tr></thead><tbody>'+
   (rows.length?rows.map(r=>{const o=r.o,T=r.c.T,t=o.estado==='fechada'?tone(T.desvio):'';
-    return '<tr data-go="'+esc(o.id)+'" tabindex="0"><td class="enc"><a href="#enc-'+esc(o.id)+'">'+esc(o.num||'(sem número)')+'</a></td><td>'+esc(o.cliente)+'</td><td class="muted">'+fdate(o.data)+'</td>'+
+    return '<tr data-go="'+esc(o.id)+'" tabindex="0"><td class="enc"><a href="#enc-'+esc(o.id)+'">'+esc(o.num||'(sem número)')+'</a></td><td>'+esc(o.cliente)+'</td><td class="enc">'+esc(o.ref||'—')+'</td><td class="muted">'+fdate(o.data)+'</td>'+
     '<td><div class="trunc" title="'+esc(o.artigos.map(a=>a.nome).join(' · '))+'">'+esc(o.artigos.map(a=>a.nome).filter(Boolean).join(' · ')||'—')+'</div>'+(o.artigos.length>1?'<span class="muted" style="font-size:12px">'+o.artigos.length+' artigos</span>':'')+'</td>'+
     '<td class="num">'+fkg(T.qtd)+'</td><td class="num">'+fkg(T.malha)+bar(T.entPct)+'</td><td class="num">'+fkg(T.faltaMalha)+'</td>'+
     '<td class="num'+(T.falta>0.05?' tone-bad':'')+'">'+(o.estado==='fechada'?'—':fkg(T.falta>0.05?-T.falta:T.stock))+'</td>'+
-    '<td class="num tone-'+t+'">'+fpct(T.real)+(T.real!=null?prov(o):'')+'</td><td class="num muted">'+fpct(T.prev)+'</td><td>'+estPill(o)+'</td></tr>'}).join(''):'<tr><td colspan="11" class="empty">Nenhuma encomenda com estes filtros.</td></tr>')+
+    '<td class="num tone-'+t+'">'+fpct(T.real)+(T.real!=null?prov(o):'')+'</td><td class="num muted">'+fpct(T.prev)+'</td><td>'+estPill(o)+'</td><td>'+devPill(devInfo(r.c,o))+'</td></tr>'}).join(''):'<tr><td colspan="13" class="empty">Nenhuma encomenda com estes filtros.</td></tr>')+
   '</tbody></table></div>';
   $('#fq').oninput=e=>{S.f.q=e.target.value;const pos=e.target.selectionStart;viewList(v);const n=$('#fq');n.focus();n.setSelectionRange(pos,pos)};
   $('#fcli').onchange=e=>{S.f.cli=e.target.value;viewList(v)};
@@ -452,6 +485,7 @@ function renderHead(){
   el.innerHTML='<div class="pagehead"><div><h1>Enc. '+esc(o.num||'(sem número)')+' <span class="muted" style="font-weight:500">· '+esc(o.cliente||'sem cliente')+'</span></h1>'+
   '<div class="sub">'+esc(o.artigos.map(a=>a.nome).filter(Boolean).join(' · ')||'Sem artigos')+'</div></div><span class="sp"></span>'+
   '<div class="seg" role="group" aria-label="Estado da encomenda"><button type="button" data-set-est="aberta" aria-pressed="'+(o.estado!=='fechada')+'">Aberta</button><button type="button" data-set-est="fechada" aria-pressed="'+(o.estado==='fechada')+'">Fechada</button></div>'+
+  '<button class="btn" type="button" data-print="order">Imprimir encomenda</button>'+
   '<button class="btn danger" type="button" data-act="del-order" id="delo">Eliminar encomenda</button></div>';
 }
 function renderDados(){
@@ -481,14 +515,14 @@ function renderMov(){
   const fioList=a=>{const n=[...yn];if(a&&key(a)&&!n.some(x=>key(x)===key(a)))n.push(a);return n};
   const artList=o.artigos.map(a=>({v:a.id,l:a.nome||'(sem nome)'}));
   $('#sec-mov').innerHTML='<div class="hd"><h2>Movimentos</h2><span class="muted">Fio entregue pelo cliente, fio devolvido e malha entregue.</span></div><div class="bd stack">'+
-  '<div><div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap"><h3>Entradas e devoluções de fio</h3><span class="sp" style="flex:1"></span><button class="btn sm" type="button" data-add="ent">+ Entrada de fio</button><button class="btn sm" type="button" data-add="dev">+ Devolução de fio</button></div>'+
-  '<div class="tw card" style="box-shadow:none"><table class="ed"><thead><tr><th style="width:130px">Tipo</th><th style="width:140px">Guia</th><th style="width:140px">Data</th><th style="min-width:220px">Fio</th><th style="width:130px">Lote</th><th class="r" style="width:110px">Qtd (kg)</th><th style="min-width:120px">Nota</th><th style="width:36px"></th></tr></thead><tbody>'+
+  '<div><div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap"><h3>Entradas e devoluções de fio</h3><span class="sp" style="flex:1"></span><button class="btn sm" type="button" data-add="ent">+ Entrada de fio</button><button class="btn sm" type="button" data-add="dev">+ Devolução de fio</button><button class="btn sm" type="button" data-print="labels">Imprimir etiquetas A5</button></div>'+
+  '<div class="tw card" style="box-shadow:none"><table class="ed"><thead><tr><th style="width:130px">Tipo</th><th style="width:140px">Guia</th><th style="width:140px">Data</th><th style="min-width:220px">Fio</th><th style="width:130px">Lote</th><th class="r" style="width:110px">Qtd (kg)</th><th style="min-width:120px">Nota</th><th style="width:96px"></th><th style="width:36px"></th></tr></thead><tbody>'+
   (o.entradas.length?o.entradas.map(e=>'<tr class="'+(e.tipo==='devolucao'?'dev':'')+'">'+
     '<td>'+SEL('e',e.id,'tipo',e.tipo==='devolucao'?'devolucao':'entrada',[{v:'entrada',l:'Entrada'},{v:'devolucao',l:'Devolução'}],{label:'Tipo'})+'</td>'+
     '<td>'+I('e',e.id,'guia',e.guia,{label:'Guia'})+'</td><td>'+I('e',e.id,'data',e.data,{t:'d',label:'Data'})+'</td>'+
     '<td>'+SEL('e',e.id,'fio',e.fio||'',[{v:'',l:'— escolher fio —'},...fioList(e.fio).map(n=>({v:n,l:n}))],{label:'Fio'})+'</td>'+
-    '<td>'+I('e',e.id,'lote',e.lote,{list:'dl-lotes',label:'Lote'})+'</td><td>'+I('e',e.id,'qtd',e.qtd,{t:'n',label:'Quantidade kg'})+'</td><td>'+I('e',e.id,'nota',e.nota,{label:'Nota'})+'</td>'+
-    '<td><button class="x" type="button" aria-label="Eliminar linha" data-del="ent" data-id="'+esc(e.id)+'">✕</button></td></tr>').join(''):'<tr><td colspan="8" class="muted" style="padding:14px 10px">Sem movimentos de fio. Use “+ Entrada de fio” quando o cliente entregar fio.</td></tr>')+
+    '<td>'+I('e',e.id,'lote',e.lote,{list:'dl-lotes',label:'Lote'})+'</td><td>'+I('e',e.id,'qtd',e.qtd,{t:'n',label:'Quantidade kg'})+'</td><td>'+I('e',e.id,'nota',e.nota,{label:'Nota'})+'</td><td>'+(e.tipo==='devolucao'?'':'<button class="btn sm" type="button" data-print="label" data-id="'+esc(e.id)+'">Etiqueta</button>')+'</td>'+
+    '<td><button class="x" type="button" aria-label="Eliminar linha" data-del="ent" data-id="'+esc(e.id)+'">✕</button></td></tr>').join(''):'<tr><td colspan="9" class="muted" style="padding:14px 10px">Sem movimentos de fio. Use “+ Entrada de fio” quando o cliente entregar fio.</td></tr>')+
   '</tbody></table></div></div>'+
   '<div><div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap"><h3>Saídas de malha</h3><span style="flex:1"></span><button class="btn sm" type="button" data-add="mal">+ Saída de malha</button></div>'+
   '<div class="tw card" style="box-shadow:none"><table class="ed"><thead><tr><th style="width:140px">Guia</th><th style="width:140px">Data</th><th style="min-width:200px">Artigo</th><th style="min-width:130px">Lote(s) de fio</th><th class="r" style="width:110px">Qtd (kg)</th><th style="min-width:120px">Nota</th><th style="width:36px"></th></tr></thead><tbody>'+
@@ -697,6 +731,70 @@ async function importFile(file){
   }catch(e){toast('Ficheiro inválido. Use uma cópia exportada por esta app.')}
 }
 
+/* ============ devolução de fio (estado) ============ */
+function devInfo(c,o){
+  const T=c.T;
+  if(T.entradas<=0.005)return{k:'f',l:'Sem fio',kg:0};
+  const tol=Math.max(1,T.liq*0.02),sobra=T.stock;
+  if(T.devolucoes<=0.005)return sobra>tol?{k:(T.entPct>=99.9?'b':'w'),l:'Não devolvido',kg:sobra}:{k:'f',l:'Sem sobras',kg:0};
+  return sobra>tol?{k:'w',l:'Parcial',kg:sobra}:{k:'o',l:'Devolvido',kg:0};
+}
+function devPill(d){return '<span class="pill '+d.k+'"'+(d.kg>0?' title="Por devolver (teórico): '+fkg(d.kg)+' kg"':'')+'>'+esc(d.l)+(d.kg>0?' · '+fkg(d.kg)+' kg':'')+'</span>'}
+
+/* ============ impressão ============ */
+function doPrint(html){
+  const p=$('#printarea');p.innerHTML=html;document.body.classList.add('printing');
+  const done=()=>{document.body.classList.remove('printing');p.innerHTML='';window.removeEventListener('afterprint',done)};
+  window.addEventListener('afterprint',done);
+  setTimeout(()=>window.print(),80);
+}
+function labelHTML(o,e){
+  const artigos=o.artigos.filter(a=>a.fios.some(f=>key(f.fio)===key(e.fio))).map(a=>a.nome).filter(Boolean).join(' · ');
+  return '<section class="lbl print-label"><div class="tt">Entrada de fio · Palete</div>'+
+   '<div class="row"><div class="k">Cliente</div><div class="big">'+esc(o.cliente||'—')+'</div></div>'+
+   '<div class="two"><div class="row"><div class="k">Encomenda</div><div class="mid">'+esc(o.num||'—')+'</div></div><div class="row"><div class="k">Ref. cliente</div><div class="mid">'+esc(o.ref||'—')+'</div></div></div>'+
+   '<div class="row"><div class="k">Fio</div><div class="big">'+esc(e.fio||'—')+'</div></div>'+
+   '<div class="row"><div class="k">Lote</div><div class="big">'+esc(e.lote||'—')+'</div></div>'+
+   '<div class="row"><div class="k">Peso</div><div class="kg">'+(e.qtd!=null&&e.qtd!==''?fkg(num(e.qtd)):'—')+' kg</div></div>'+
+   '<div class="two"><div class="row"><div class="k">Guia</div><div class="mid">'+esc(e.guia||'—')+'</div></div><div class="row"><div class="k">Data</div><div class="mid">'+esc(fdate(e.data)||'—')+'</div></div></div>'+
+   (artigos?'<div class="row"><div class="k">Artigo</div><div class="mid" style="font-size:12pt">'+esc(artigos)+'</div></div>':'')+
+   '<div class="fill"><div>Palete n.º</div><div>Volumes</div></div></section>';
+}
+function pt(h,rows,r){r=r||[];
+  return '<table class="pt"><thead><tr>'+h.map((x,i)=>'<th'+(r.includes(i)?' class="r"':'')+'>'+esc(x)+'</th>').join('')+'</tr></thead><tbody>'+
+  (rows.length?rows.map(row=>'<tr>'+row.map((x,i)=>'<td'+(r.includes(i)?' class="r"':'')+'>'+x+'</td>').join('')+'</tr>').join(''):'<tr><td colspan="'+h.length+'">—</td></tr>')+'</tbody></table>';
+}
+function orderPrintHTML(o){
+  const c=calc(o),T=c.T,d=devInfo(c,o),E=esc;
+  const art=id=>E((o.artigos.find(a=>a.id===id)||{}).nome||'—');
+  let h='<div class="print-doc"><h1>Encomenda '+E(o.num||'(sem número)')+' · '+E(o.cliente||'sem cliente')+'</h1>'+
+   '<div class="psub">Impresso em '+E(fdate(today()))+' · Estado: '+(o.estado==='fechada'?'Fechada':'Aberta')+' · Fio devolvido: '+E(d.l)+(d.kg>0?' ('+fkg(d.kg)+' kg por devolver)':'')+'</div>';
+  h+='<h2>Dados da encomenda</h2>'+pt(['N.º encomenda','Cliente','Ref. cliente','Data','Notas'],[[E(o.num),E(o.cliente),E(o.ref),E(fdate(o.data)),E(o.notas)]]);
+  h+='<h2>Artigos e composição</h2>'+pt(['Artigo','Qtd enc. (kg)','Quebra prev.','Composição'],o.artigos.map(a=>[E(a.nome),fkg(num(a.qtd)),fpct(num(a.qprev)),a.fios.map(f=>E(f.fio)+' '+nf(num(f.pct),0,2)+' %').join('<br>')]),[1,2]);
+  h+='<h2>Entradas e devoluções de fio</h2>'+pt(['Tipo','Guia','Data','Fio','Lote','Qtd (kg)','Nota'],o.entradas.map(e=>[e.tipo==='devolucao'?'Devolução':'Entrada',E(e.guia),E(fdate(e.data)),E(e.fio),E(e.lote),fkg(num(e.qtd)),E(e.nota)]),[5]);
+  h+='<h2>Saídas de malha</h2>'+pt(['Guia','Data','Artigo','Lote(s)','Qtd (kg)','Nota'],o.malha.map(m=>[E(m.guia),E(fdate(m.data)),art(m.artigoId),E(m.lote),fkg(num(m.qtd)),E(m.nota)]),[4]);
+  h+='<h2>Resumo'+(o.estado==='fechada'?'':' (quebra provisória)')+'</h2>'+pt(['Malha entregue','Malha encomendada','Fio líquido','Quebra real','Quebra prevista','Desvio','Stock fio (teórico)'],
+   [[fkg(T.malha)+' kg',fkg(T.qtd)+' kg',fkg(T.liq)+' kg',fpct(T.real),fpct(T.prev),fpp(T.desvio),fkg(T.falta>0.05?-T.falta:T.stock)+' kg']],[0,1,2,3,4,5,6]);
+  if(c.warn.length)h+=c.warn.map(w=>'<div class="pw">⚠ '+w.m+'</div>').join('');
+  h+='<h2>Quebras por fio</h2>'+pt(['Fio','Entradas','Devoluções','Líquido','Consumo malha','Quebra kg','Quebra real','Prevista','Stock teórico'],
+   c.Y.map(y=>[E(y.fio),fkg(y.entradas),fkg(y.devolucoes),fkg(y.liq),fkg(y.usado),y.real!=null?fkg(y.quebraKg):'—',fpct(y.real),fpct(y.prev),fkg(y.falta>0.05?-y.falta:y.lotList.reduce((s,l)=>s+Math.max(0,l.stock),0))]),[1,2,3,4,5,6,7,8]);
+  h+='<h2>Quebras por artigo</h2>'+pt(['Artigo','Encomendado','Entregue','Em falta','Fio consumido','Quebra kg','Quebra real','Prevista'],
+   c.A.map(x=>[E(x.nome),fkg(x.qtd),fkg(x.malha),fkg(x.falta),fkg(x.usado),x.real!=null?fkg(x.perda):'—',fpct(x.real),fpct(x.qprev)]),[1,2,3,4,5,6,7]);
+  const L=[];c.Y.forEach(y=>{y.lotList.forEach(l=>L.push([E(y.fio),E(l.lote),fkg(l.entradas),fkg(l.devolucoes),fkg(l.consumo),fkg(l.stock)]));if(y.falta>0.05)L.push([E(y.fio),'sem fio recebido','—','—',fkg(y.falta),fkg(-y.falta)])});
+  h+='<h2>Stock por lote</h2>'+pt(['Fio','Lote','Entradas','Devoluções','Consumo teórico','Stock'],L,[2,3,4,5]);
+  return h+'</div>';
+}
+function onPrint(kind,el){
+  const o=curOrder();if(!o)return;
+  if(kind==='order')doPrint(orderPrintHTML(o));
+  else if(kind==='label'){const e=o.entradas.find(x=>x.id===el.dataset.id);if(e)doPrint(labelHTML(o,e))}
+  else if(kind==='labels'){
+    const L=o.entradas.filter(e=>e.tipo!=='devolucao');
+    if(!L.length){toast('Não há entradas de fio para imprimir');return}
+    doPrint(L.map(e=>labelHTML(o,e)).join(''));
+  }
+}
+
 /* ============ eventos ============ */
 const root=document;
 root.addEventListener('change',e=>{
@@ -705,8 +803,9 @@ root.addEventListener('change',e=>{
   if(t.matches('input[data-act="import"]')){importFile(t.files[0]);t.value='';return}
 });
 root.addEventListener('click',e=>{
-  const b=e.target.closest('[data-act],[data-add],[data-del],[data-set-est],[data-est],[data-sest],[data-qtab],[data-qest],tr[data-go]');if(!b)return;
+  const b=e.target.closest('[data-act],[data-print],[data-add],[data-del],[data-set-est],[data-est],[data-sest],[data-qtab],[data-qest],tr[data-go]');if(!b)return;
   if(b.matches('tr[data-go]')){if(e.target.closest('a'))return;location.hash='#enc-'+b.dataset.go;return}
+  if(b.dataset.print){onPrint(b.dataset.print,b);return}
   if(b.dataset.add){onAdd(b.dataset.add,b);return}
   if(b.dataset.del){onDel(b.dataset.del,b);return}
   if(b.dataset.setEst){const o=curOrder();if(o){o.estado=b.dataset.setEst;scheduleSave(o.id);renderHead();renderRes()}return}
