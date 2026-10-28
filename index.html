@@ -100,7 +100,11 @@ tr:last-child td{border-bottom:0}
 .r{text-align:right}th.r{text-align:right}
 .num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
 .tbl tbody tr[data-go]{cursor:pointer}
-.tbl tbody tr[data-go]:hover td{background:var(--surface2)}
+.tbl tbody tr[data-go]:hover td{background:var(--accent-soft)}
+.tbl tr.g1 td{background:color-mix(in srgb,var(--surface2) 70%,var(--surface))}
+.tbl tr.gs td{border-top:2px solid var(--line)}
+.tbl tr.sub td{border-bottom:1px dashed var(--line2)}
+.tbl tbody td[rowspan]{vertical-align:middle}
 .tbl .grp td{background:var(--surface2);font-weight:600;border-top:1px solid var(--line)}
 .tbl .tot td{font-weight:600;background:var(--surface2);border-top:1px solid var(--line)}
 .enc{font-family:var(--f-mono);font-weight:500;white-space:normal;overflow-wrap:anywhere}
@@ -121,6 +125,42 @@ tr:last-child td{border-bottom:0}
 .pill.b{background:var(--bad-soft);color:var(--bad)}
 .pill.o{background:var(--ok-soft);color:var(--ok)}
 .prov{font-size:10.5px;color:var(--muted);font-family:var(--f-body);margin-left:4px}
+
+/* cores por tipo de lançamento */
+:root{--c-art:#5B4BA8;--c-art-soft:#ECE8F8;--c-fio:#1D5FA8;--c-fio-soft:#DDEBFA;--c-dev:#9A5B00;--c-dev-soft:#FBE8C4;--c-mal:#1B7A4B;--c-mal-soft:#D9F1E3}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--c-art:#B3A6F0;--c-art-soft:#2A2547;--c-fio:#7DB6F2;--c-fio-soft:#14304F;--c-dev:#E3A93B;--c-dev-soft:#3A2B0C;--c-mal:#52C28A;--c-mal-soft:#12301F}}
+:root[data-theme="dark"]{--c-art:#B3A6F0;--c-art-soft:#2A2547;--c-fio:#7DB6F2;--c-fio-soft:#14304F;--c-dev:#E3A93B;--c-dev-soft:#3A2B0C;--c-mal:#52C28A;--c-mal-soft:#12301F}
+.card.sec{border-left:6px solid var(--sc)}
+.card.sec>.hd{background:var(--sc-soft)}
+.card.sec>.hd h2{color:var(--sc)}
+.s-dados{--sc:var(--accent);--sc-soft:var(--accent-soft)}
+.s-art{--sc:var(--c-art);--sc-soft:var(--c-art-soft)}
+.s-mov{--sc:var(--c-fio);--sc-soft:var(--c-fio-soft)}
+.blk{border:1px solid var(--sc);border-left-width:6px;border-radius:8px;overflow:hidden;background:var(--surface)}
+.blk>.bh{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 12px;background:var(--sc-soft)}
+.blk>.bh h3{color:var(--sc);font-size:13px}
+.blk .tw.card{border:0;border-radius:0;box-shadow:none;background:transparent}
+.blk .ed thead th{background:transparent;color:var(--sc);border-bottom:2px solid var(--sc)}
+.blk-fio{--sc:var(--c-fio);--sc-soft:var(--c-fio-soft)}
+.blk-mal{--sc:var(--c-mal);--sc-soft:var(--c-mal-soft)}
+.ed .cell{border-color:var(--line);background:var(--surface)}
+.ed .cell:hover{border-color:var(--sc,var(--accent))}
+.ed .cell:focus{border-color:var(--sc,var(--accent));box-shadow:0 0 0 2px var(--sc-soft,var(--accent-soft))}
+.ed tr.ent td{background:color-mix(in srgb,var(--c-fio-soft) 45%,var(--surface))}
+.ed tr.dev td{background:var(--c-dev-soft)}
+.ed tr.mal td{background:color-mix(in srgb,var(--c-mal-soft) 45%,var(--surface))}
+.ed tr.dev .cell,.ed tr.ent .cell,.ed tr.mal .cell{background:var(--surface)}
+.ed tr td{border-bottom:1px solid var(--surface)}
+.art .ed thead th{color:var(--c-art);border-bottom:2px solid var(--c-art);background:transparent}
+.art{border-color:var(--c-art)}
+.art .ah{background:var(--c-art-soft);border-bottom:1px solid var(--c-art)}
+.art .ah .fld label{color:var(--c-art)}
+.art .ed .cell:focus,.art .ah .cell:focus{border-color:var(--c-art);box-shadow:0 0 0 2px var(--c-art-soft)}
+.btn.c-fio{background:var(--c-fio);border-color:var(--c-fio);color:var(--surface);font-weight:600}
+.btn.c-dev{background:var(--c-dev);border-color:var(--c-dev);color:var(--surface);font-weight:600}
+.btn.c-mal{background:var(--c-mal);border-color:var(--c-mal);color:var(--surface);font-weight:600}
+.btn.c-art{background:var(--c-art);border-color:var(--c-art);color:var(--surface);font-weight:600}
+.btn.c-fio:hover,.btn.c-dev:hover,.btn.c-mal:hover,.btn.c-art:hover{filter:brightness(1.1)}
 /* células editáveis */
 .cell{width:100%;min-width:0;border:1px solid transparent;background:transparent;padding:6px 8px;border-radius:5px}
 .cell:hover{border-color:var(--line)}
@@ -129,7 +169,6 @@ tr:last-child td{border-bottom:0}
 select.cell{padding-right:2px;cursor:pointer}
 .ed td{padding:2px 4px}
 .ed th{padding:6px 8px}
-.ed tr.dev td{background:var(--warn-soft)}
 .ed tr.dev .cell:focus{background:var(--surface)}
 .fld{display:flex;flex-direction:column;gap:4px;min-width:0}
 .fld label{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
@@ -446,12 +485,20 @@ function viewList(v){
    '<select id="fcli" aria-label="Cliente">'+opts(allClients(),F.cli,'Todos os clientes')+'</select>'+
    '<div class="seg" role="group" aria-label="Estado">'+[['aberta','Abertas'],['fechada','Fechadas'],['','Todas']].map(x=>'<button type="button" data-est="'+x[0]+'" aria-pressed="'+(F.est===x[0])+'">'+x[1]+'</button>').join('')+'</div></div>'+
   '<div class="card tw"><table class="tbl"><thead><tr><th>Enc.</th><th>Cliente</th><th>Ref. cliente</th><th>Data</th><th>Artigo</th><th class="r">Encomendado</th><th class="r">Entregue</th><th class="r">Em falta</th><th class="r">Stock fio</th><th class="r">Quebra real</th><th class="r">Prevista</th><th>Estado</th><th>Fio devolvido</th></tr></thead><tbody>'+
-  (rows.length?rows.map(r=>{const o=r.o,T=r.c.T,t=o.estado==='fechada'?tone(T.desvio):'';
-    return '<tr data-go="'+esc(o.id)+'" tabindex="0"><td class="enc"><a href="#enc-'+esc(o.id)+'">'+esc(o.num||'(sem número)')+'</a></td><td>'+esc(o.cliente)+'</td><td class="enc refc">'+esc(o.ref||'—')+'</td><td class="muted">'+fdate(o.data)+'</td>'+
-    '<td><div class="trunc" title="'+esc(o.artigos.map(a=>a.nome).join(' · '))+'">'+esc(o.artigos.map(a=>a.nome).filter(Boolean).join(' · ')||'—')+'</div>'+(o.artigos.length>1?'<span class="muted" style="font-size:12px">'+o.artigos.length+' artigos</span>':'')+'</td>'+
-    '<td class="num">'+fkg(T.qtd)+'</td><td class="num">'+fkg(T.malha)+bar(T.entPct)+'</td><td class="num">'+fkg(T.faltaMalha)+'</td>'+
-    '<td class="num'+(T.falta>0.05?' tone-bad':'')+'">'+(o.estado==='fechada'?'—':fkg(T.falta>0.05?-T.falta:T.stock))+'</td>'+
-    '<td class="num tone-'+t+'">'+fpct(T.real)+(T.real!=null?prov(o):'')+'</td><td class="num muted">'+fpct(T.prev)+'</td><td>'+estPill(o)+'</td><td>'+devPill(devInfo(r.c,o))+'</td></tr>'}).join(''):'<tr><td colspan="13" class="empty">Nenhuma encomenda com estes filtros.</td></tr>')+
+  (rows.length?rows.map((r,ri)=>{const o=r.o,c=r.c,T=c.T,A=c.A,n=Math.max(1,A.length),t=o.estado==='fechada'?tone(T.desvio):'',zc=ri%2?'g1':'g0';
+    const rs=' rowspan="'+n+'"';
+    let h='';
+    for(let k=0;k<n;k++){
+      const x=A[k];
+      h+='<tr class="'+zc+(k===0?' gs':'')+(k<n-1?' sub':'')+'" data-go="'+esc(o.id)+'" tabindex="0">';
+      if(k===0)h+='<td class="enc"'+rs+'><a href="#enc-'+esc(o.id)+'">'+esc(o.num||'(sem número)')+'</a></td><td'+rs+'>'+esc(o.cliente)+'</td><td class="enc refc"'+rs+'>'+esc(o.ref||'—')+'</td><td class="muted"'+rs+'>'+fdate(o.data)+'</td>';
+      if(x)h+='<td><div class="trunc">'+esc(x.nome)+'</div></td><td class="num">'+fkg(x.qtd)+'</td><td class="num">'+fkg(x.malha)+bar(x.entPct)+'</td><td class="num">'+fkg(x.falta)+'</td>';
+      else h+='<td class="muted">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td>';
+      if(k===0)h+='<td class="num'+(T.falta>0.05?' tone-bad':'')+'"'+rs+'>'+(o.estado==='fechada'?'—':fkg(T.falta>0.05?-T.falta:T.stock))+'</td>'+
+        '<td class="num tone-'+t+'"'+rs+'>'+fpct(T.real)+(T.real!=null?prov(o):'')+'</td><td class="num muted"'+rs+'>'+fpct(T.prev)+'</td><td'+rs+'>'+estPill(o)+'</td><td'+rs+'>'+devPill(devInfo(c,o))+'</td>';
+      h+='</tr>';
+    }
+    return h}).join(''):'<tr><td colspan="13" class="empty">Nenhuma encomenda com estes filtros.</td></tr>')+
   '</tbody></table></div>';
   $('#fq').oninput=e=>{S.f.q=e.target.value;const pos=e.target.selectionStart;viewList(v);const n=$('#fq');n.focus();n.setSelectionRange(pos,pos)};
   $('#fcli').onchange=e=>{S.f.cli=e.target.value;viewList(v)};
@@ -474,7 +521,7 @@ function renderDetail(keepFocus){
   const ae=document.activeElement;if(keepFocus&&ae&&ae.dataset&&ae.dataset.f)focusKey=ae.dataset.f;
   const v=$('#view');
   v.innerHTML='<a class="back" href="#encomendas">← Encomendas</a><div id="sec-head"></div><div class="stack">'+
-   '<section class="card" id="sec-dados"></section><section class="card" id="sec-art"></section><section class="card" id="sec-mov"></section><section id="sec-res"></section></div>'+
+   '<section class="card sec s-dados" id="sec-dados"></section><section class="card sec s-art" id="sec-art"></section><section class="card sec s-mov" id="sec-mov"></section><section id="sec-res"></section></div>'+
    '<datalist id="dl-cli"></datalist><datalist id="dl-fios"></datalist><datalist id="dl-lotes"></datalist>';
   renderDados();renderHead();renderArt();renderMov();renderRes();fillLists();
   if(focusKey){const el=$('[data-f="'+focusKey.replace(/"/g,'\\"')+'"]');if(el){el.focus();if(el.select&&el.type==='text'&&!keepFocus)el.select()}focusKey=null}
@@ -508,7 +555,7 @@ function renderDados(){
 function sumChip(a){const s=a.fios.reduce((t,f)=>t+num(f.pct),0),ok=Math.abs(s-100)<0.05;return '<span class="sumchip '+(ok?'tone-ok':'tone-warn')+'" data-sum="'+esc(a.id)+'">Soma: '+nf(s,0,2)+' %'+(ok?' ✓':'')+'</span>'}
 function renderArt(){
   const o=curOrder();
-  $('#sec-art').innerHTML='<div class="hd"><h2>Artigos e composição dos fios</h2><span class="muted">A composição (%) de cada artigo decide quanto fio a malha entregue consome.</span><span class="sp"></span><button class="btn sm" type="button" data-add="art">+ Artigo</button></div><div class="bd">'+
+  $('#sec-art').innerHTML='<div class="hd"><h2>Artigos e composição dos fios</h2><span class="muted">A composição (%) de cada artigo decide quanto fio a malha entregue consome.</span><span class="sp"></span><button class="btn sm c-art" type="button" data-add="art">+ Artigo</button></div><div class="bd">'+
   (o.artigos.length?o.artigos.map((a,ai)=>
    '<div class="art"><div class="ah"><div class="fld"><label>Artigo '+(o.artigos.length>1?(ai+1):'')+'</label>'+I('a',a.id,'nome',a.nome,{ph:'Ex.: Jersey 30/1 Viscose C/ Licra',label:'Nome do artigo'})+'</div>'+
    '<div class="fld"><label>Qtd enc. (kg)</label>'+I('a',a.id,'qtd',a.qtd,{t:'n',label:'Quantidade encomendada'})+'</div>'+
@@ -523,18 +570,18 @@ function renderMov(){
   const fioList=a=>{const n=[...yn];if(a&&key(a)&&!n.some(x=>key(x)===key(a)))n.push(a);return n};
   const artList=o.artigos.map(a=>({v:a.id,l:a.nome||'(sem nome)'}));
   $('#sec-mov').innerHTML='<div class="hd"><h2>Movimentos</h2><span class="muted">Fio entregue pelo cliente, fio devolvido e malha entregue.</span></div><div class="bd stack">'+
-  '<div><div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap"><h3>Entradas e devoluções de fio</h3><span class="sp" style="flex:1"></span><button class="btn sm" type="button" data-add="ent">+ Entrada de fio</button><button class="btn sm" type="button" data-add="dev">+ Devolução de fio</button><button class="btn sm" type="button" data-print="labels">Imprimir etiquetas A5</button></div>'+
+  '<div class="blk blk-fio"><div class="bh"><h3>Entradas e devoluções de fio</h3><span class="sp" style="flex:1"></span><button class="btn sm c-fio" type="button" data-add="ent">+ Entrada de fio</button><button class="btn sm c-dev" type="button" data-add="dev">+ Devolução de fio</button><button class="btn sm" type="button" data-print="labels">Imprimir etiquetas A5</button></div>'+
   '<div class="tw card" style="box-shadow:none"><table class="ed"><thead><tr><th style="width:11%">Tipo</th><th style="width:15%">Guia</th><th style="width:13%">Data</th><th style="width:20%">Fio</th><th style="width:17%">Lote</th><th class="r" style="width:10%">Qtd (kg)</th><th style="width:7%">Nota</th><th style="width:6%"></th><th style="width:3%"></th></tr></thead><tbody>'+
-  (o.entradas.length?o.entradas.map(e=>'<tr class="'+(e.tipo==='devolucao'?'dev':'')+'">'+
+  (o.entradas.length?o.entradas.map(e=>'<tr class="'+(e.tipo==='devolucao'?'dev':'ent')+'">'+
     '<td>'+SEL('e',e.id,'tipo',e.tipo==='devolucao'?'devolucao':'entrada',[{v:'entrada',l:'Entrada'},{v:'devolucao',l:'Devolução'}],{label:'Tipo'})+'</td>'+
     '<td>'+I('e',e.id,'guia',e.guia,{label:'Guia'})+'</td><td>'+I('e',e.id,'data',e.data,{t:'d',label:'Data'})+'</td>'+
     '<td>'+SEL('e',e.id,'fio',e.fio||'',[{v:'',l:'— escolher fio —'},...fioList(e.fio).map(n=>({v:n,l:n}))],{label:'Fio'})+'</td>'+
     '<td>'+I('e',e.id,'lote',e.lote,{list:'dl-lotes',label:'Lote'})+'</td><td>'+I('e',e.id,'qtd',e.qtd,{t:'n',label:'Quantidade kg'})+'</td><td>'+I('e',e.id,'nota',e.nota,{label:'Nota'})+'</td><td>'+(e.tipo==='devolucao'?'':'<button class="btn sm" type="button" data-print="label" data-id="'+esc(e.id)+'">Etiqueta</button>')+'</td>'+
     '<td><button class="x" type="button" aria-label="Eliminar linha" data-del="ent" data-id="'+esc(e.id)+'">✕</button></td></tr>').join(''):'<tr><td colspan="9" class="muted" style="padding:14px 10px">Sem movimentos de fio. Use “+ Entrada de fio” quando o cliente entregar fio.</td></tr>')+
   '</tbody></table></div></div>'+
-  '<div><div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap"><h3>Saídas de malha</h3><span style="flex:1"></span><button class="btn sm" type="button" data-add="mal">+ Saída de malha</button></div>'+
+  '<div class="blk blk-mal"><div class="bh"><h3>Saídas de malha</h3><span style="flex:1"></span><button class="btn sm c-mal" type="button" data-add="mal">+ Saída de malha</button></div>'+
   '<div class="tw card" style="box-shadow:none"><table class="ed"><thead><tr><th style="width:13%">Guia</th><th style="width:14%">Data</th><th style="width:24%">Artigo</th><th style="width:22%">Lote(s) de fio</th><th class="r" style="width:8%">Qtd (kg)</th><th style="width:14%">Nota</th><th style="width:5%"></th></tr></thead><tbody>'+
-  (o.malha.length?o.malha.map(m=>'<tr><td>'+I('m',m.id,'guia',m.guia,{label:'Guia'})+'</td><td>'+I('m',m.id,'data',m.data,{t:'d',label:'Data'})+'</td>'+
+  (o.malha.length?o.malha.map(m=>'<tr class="mal"><td>'+I('m',m.id,'guia',m.guia,{label:'Guia'})+'</td><td>'+I('m',m.id,'data',m.data,{t:'d',label:'Data'})+'</td>'+
     '<td>'+SEL('m',m.id,'artigoId',m.artigoId||'',[{v:'',l:'— escolher artigo —'},...artList],{label:'Artigo'})+'</td>'+
     '<td>'+I('m',m.id,'lote',m.lote,{list:'dl-lotes',ph:'Ex.: 3203 + 48762',label:'Lotes'})+'</td><td>'+I('m',m.id,'qtd',m.qtd,{t:'n',label:'Quantidade kg'})+'</td><td>'+I('m',m.id,'nota',m.nota,{label:'Nota'})+'</td>'+
     '<td><button class="x" type="button" aria-label="Eliminar linha" data-del="mal" data-id="'+esc(m.id)+'">✕</button></td></tr>').join(''):'<tr><td colspan="7" class="muted" style="padding:14px 10px">Sem saídas de malha.</td></tr>')+
