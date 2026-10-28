@@ -247,6 +247,7 @@ details.how p{margin:8px 0 0;max-width:80ch}
   <nav id="nav" aria-label="Secções">
     <a href="#encomendas" data-v="list">Encomendas</a>
     <a href="#stock" data-v="stock">Stock de fios</a>
+    <a href="#lotes" data-v="lotes">Lotes</a>
     <a href="#quebras" data-v="quebras">Quebras</a>
     <a href="#dados" data-v="dados">Dados e cálculos</a>
   </nav>
@@ -342,7 +343,7 @@ const tone=d=>d==null?'':(d>0.5?'bad':(d>0.05?'warn':'ok'));
 
 /* ============ estado e armazenamento ============ */
 const S={orders:new Map(),view:'list',openId:null,ready:false,mode:'?',
-  f:{q:'',cli:'',est:'aberta',scli:'',sest:'aberta',sall:false,qcli:'',qest:'',qtab:'fio'}};
+  f:{q:'',cli:'',est:'aberta',scli:'',sest:'aberta',sall:false,lq:'',lcli:'',lmulti:false,qcli:'',qest:'',qtab:'fio'}};
 const dirty=new Set(),timers=new Map(),chain=new Map();
 let sb=null;
 const LS='gestao-fios-encomendas-v1';
@@ -438,7 +439,7 @@ function toast(msg,undo){
 function route(){
   const h=location.hash.replace(/^#/,'');
   if(h.startsWith('enc-')){S.view='detail';S.openId=h.slice(4)}
-  else if(h==='stock')S.view='stock';else if(h==='quebras')S.view='quebras';else if(h==='dados')S.view='dados';
+  else if(h==='stock')S.view='stock';else if(h==='lotes')S.view='lotes';else if(h==='quebras')S.view='quebras';else if(h==='dados')S.view='dados';
   else{S.view='list';S.openId=null}
   $$('#nav a').forEach(a=>{const on=a.dataset.v===S.view||(S.view==='detail'&&a.dataset.v==='list');if(on)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
   renderView();window.scrollTo(0,0);
@@ -447,7 +448,7 @@ function renderView(){
   if(!S.ready)return;
   if(S.view==='detail'){S.orders.has(S.openId)?renderDetail():(location.hash='#encomendas');return}
   const v=$('#view');
-  ({list:viewList,stock:viewStock,quebras:viewQuebras,dados:viewDados})[S.view](v);
+  ({list:viewList,stock:viewStock,lotes:viewLotes,quebras:viewQuebras,dados:viewDados})[S.view](v);
 }
 window.addEventListener('hashchange',route);
 
@@ -710,6 +711,81 @@ function viewStock(v){
   '<p class="muted" style="font-size:12.5px;max-width:80ch">O stock é teórico: fio recebido menos devoluções menos o consumo da malha entregue (com a quebra prevista). Devolva o fio que sobra para o stock voltar a zero.</p>';
   $('#scli').onchange=e=>{S.f.scli=e.target.value;viewStock(v)};
   $('#sall').onchange=e=>{S.f.sall=e.target.checked;viewStock(v)};
+}
+
+
+/* ============ vista: lotes ============ */
+const loteKey=x=>String(x==null?'':x).toUpperCase().replace(/\s+/g,'');
+const loteTokens=t=>String(t==null?'':t).split(/[+\n;]+/).map(x=>x.trim()).filter(Boolean);
+function loteIndex(){
+  const raw=new Map();
+  const ref=(k,disp,o)=>{
+    if(!raw.has(k))raw.set(k,{k,orders:new Map()});
+    const g=raw.get(k);
+    if(!g.orders.has(o.id))g.orders.set(o.id,{o,fios:new Set(),lotes:new Set(),ent:0,dev:0,guias:[]});
+    const r=g.orders.get(o.id);r.lotes.add(disp);return r;
+  };
+  [...S.orders.values()].forEach(o=>{
+    o.entradas.forEach(e=>{const t=String(e.lote==null?'':e.lote).trim();if(!t)return;const r=ref(loteKey(t),t,o);if(e.fio)r.fios.add(String(e.fio).trim());if(e.tipo==='devolucao')r.dev+=num(e.qtd);else r.ent+=num(e.qtd)});
+    o.malha.forEach(m=>loteTokens(m.lote).forEach(t=>{const r=ref(loteKey(t),t,o);if(m.guia&&!r.guias.includes(m.guia))r.guias.push(m.guia)}));
+  });
+  // lotes escritos com prefixo (ex.: 0641-1302582606166) juntam-se ao lote curto (1302582606166)
+  const keys=[...raw.keys()].sort((a,b)=>a.length-b.length||(a<b?-1:1));
+  const canon=new Map();
+  keys.forEach(k=>{let c=k;for(const s2 of keys){if(s2.length>=5&&s2.length<k.length&&k.endsWith(s2)&&/[-\/]/.test(k[k.length-s2.length-1])){c=canon.get(s2)||s2;break}}canon.set(k,c)});
+  const groups=new Map();
+  raw.forEach((g,k)=>{
+    const c=canon.get(k);
+    if(!groups.has(c))groups.set(c,{k:c,orders:new Map(),variants:new Set()});
+    const G=groups.get(c);
+    g.orders.forEach((r,id)=>{
+      if(!G.orders.has(id))G.orders.set(id,{o:r.o,fios:new Set(),lotes:new Set(),ent:0,dev:0,guias:[]});
+      const R=G.orders.get(id);r.fios.forEach(x=>R.fios.add(x));r.lotes.forEach(x=>{R.lotes.add(x);G.variants.add(x)});R.ent+=r.ent;R.dev+=r.dev;r.guias.forEach(x=>{if(!R.guias.includes(x))R.guias.push(x)});
+    });
+  });
+  return [...groups.values()].map(G=>{
+    const orders=[...G.orders.values()].sort((a,b)=>String(b.o.data||'').localeCompare(String(a.o.data||''))||String(b.o.num).localeCompare(String(a.o.num)));
+    const fios=new Set();orders.forEach(r=>r.fios.forEach(x=>fios.add(x)));
+    const clis=new Set(orders.map(r=>r.o.cliente||'(sem cliente)'));
+    return{k:G.k,variants:[...G.variants].sort((a,b)=>a.length-b.length),orders,fios:[...fios],clis:[...clis]};
+  });
+}
+function viewLotes(v){
+  const F=S.f,all=loteIndex();
+  const q=String(F.lq||'').trim().toLowerCase(),qk=loteKey(F.lq);
+  let L=all.filter(g=>{
+    if(F.lcli&&!g.clis.includes(F.lcli))return false;
+    if(F.lmulti&&g.orders.length<2)return false;
+    if(q){
+      const hit=g.k.includes(qk)||g.variants.some(x=>loteKey(x).includes(qk))||g.fios.some(f=>key(f).includes(q))||g.orders.some(r=>[r.o.num,r.o.cliente,r.o.ref].some(x=>String(x||'').toLowerCase().includes(q)));
+      if(!hit)return false;
+    }
+    return true;
+  }).sort((a,b)=>b.orders.length-a.orders.length||(a.k<b.k?-1:1));
+  const nMulti=all.filter(g=>g.orders.length>1).length,nCli=all.filter(g=>g.clis.length>1).length;
+  const rowsHtml=L.map(g=>{
+    const multi=g.orders.length>1;
+    return '<tr class="grp"><td colspan="8"><span class="enc">'+g.variants.map(esc).join(' · ')+'</span> <span class="muted" style="font-weight:500">· '+(g.fios.length?esc(g.fios.join(' / ')):'sem entrada registada')+'</span> '+
+      '<span class="pill '+(multi?'w':'f')+'" style="margin-left:6px">'+g.orders.length+(g.orders.length===1?' encomenda':' encomendas')+'</span>'+
+      (g.clis.length>1?' <span class="pill b" title="Fio pertence a cada cliente: confirme se o lote está correto">Clientes diferentes</span>':'')+'</td></tr>'+
+      g.orders.map(r=>{const o=r.o,rec=r.ent>0||r.dev>0;
+        return '<tr data-go="'+esc(o.id)+'" tabindex="0"><td class="enc"><a href="#enc-'+esc(o.id)+'">'+esc(o.num||'(sem número)')+'</a></td><td>'+esc(o.cliente)+'</td><td class="enc refc">'+esc(o.ref||'—')+'</td><td>'+(r.fios.size?esc([...r.fios].join(' / ')):'<span class="muted">—</span>')+'</td>'+
+        '<td class="enc">'+[...r.lotes].map(esc).join('<br>')+'</td><td class="num">'+(rec?fkg(r.ent):'—')+'</td><td class="num">'+(r.dev>0?fkg(r.dev):'—')+'</td>'+
+        '<td>'+(r.guias.length?esc(r.guias.join(', ')):'<span class="muted">sem saídas</span>')+(rec?'':' <span class="pill f">só referido na malha</span>')+'</td></tr>'}).join('');
+  }).join('');
+  v.innerHTML='<div class="pagehead"><div><h1>Lotes de fio</h1><div class="sub">Em que encomendas foi usado cada lote</div></div></div>'+
+  '<div class="kpis"><div class="kpi"><div class="l">Lotes distintos</div><div class="v">'+all.length+'</div></div>'+
+   '<div class="kpi"><div class="l">Lotes em mais de uma encomenda</div><div class="v">'+nMulti+'</div></div>'+
+   '<div class="kpi'+(nCli?' bad':'')+'"><div class="l">Lotes de clientes diferentes</div><div class="v">'+nCli+'</div><div class="n">'+(nCli?'convém confirmar':'nenhum caso')+'</div></div></div>'+
+  '<div class="filters"><input type="search" id="lq" placeholder="Pesquisar lote, fio, encomenda, cliente…" value="'+esc(F.lq)+'" aria-label="Pesquisar lote">'+
+   '<select id="lcli" aria-label="Cliente">'+opts(allClients(),F.lcli,'Todos os clientes')+'</select>'+
+   '<label class="chk"><input type="checkbox" id="lmulti"'+(F.lmulti?' checked':'')+'> Só lotes em mais de uma encomenda</label></div>'+
+  (L.length?'<div class="card tw"><table class="tbl"><thead><tr><th>Enc.</th><th>Cliente</th><th>Ref. cliente</th><th>Fio</th><th>Lote (como lançado)</th><th class="r">Entradas</th><th class="r">Devoluções</th><th>Saídas de malha (guias)</th></tr></thead><tbody>'+rowsHtml+'</tbody></table></div>'
+   :'<div class="card"><div class="empty">Nenhum lote para estes filtros.</div></div>')+
+  '<p class="muted" style="font-size:12.5px;max-width:80ch">Cada lote aparece uma vez, com as encomendas onde teve entrada de fio ou onde foi indicado nas saídas de malha. Lotes escritos com prefixo (por exemplo 0641-1302582606166) juntam-se ao lote sem prefixo (1302582606166).</p>';
+  $('#lq').oninput=e=>{S.f.lq=e.target.value;const pos=e.target.selectionStart;viewLotes(v);const n=$('#lq');n.focus();n.setSelectionRange(pos,pos)};
+  $('#lcli').onchange=e=>{S.f.lcli=e.target.value;viewLotes(v)};
+  $('#lmulti').onchange=e=>{S.f.lmulti=e.target.checked;viewLotes(v)};
 }
 
 /* ============ vista: quebras ============ */
