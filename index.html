@@ -255,6 +255,57 @@ details.how p{margin:8px 0 0;max-width:80ch}
   .lbl .fill div.pal{border-bottom:0;padding-top:4mm;font-size:20pt}
   .lbl .fill div.pal b{font-size:30pt}
 }
+/* ===== leitura rápida: mais contraste e separação ===== */
+:root{--line:#B9C4CF;--line2:#D3DCE4;--muted:#46535F}
+th{background:color-mix(in srgb,var(--ink) 9%,var(--surface));color:var(--ink);font-weight:700;border-bottom:2px solid var(--line)}
+.tbl tbody tr:nth-child(even):not(.g0):not(.g1):not(.grp):not(.tot) td{background:color-mix(in srgb,var(--ink) 4.5%,var(--surface))}
+.tbl .tot td{background:color-mix(in srgb,var(--ink) 11%,var(--surface));border-top:2px solid var(--line);font-weight:700}
+.tbl .grp td{background:color-mix(in srgb,var(--ink) 11%,var(--surface));border-top:2px solid var(--line);font-weight:700}
+.tbl tr.g1 td{background:color-mix(in srgb,var(--ink) 6%,var(--surface))}
+.tbl tr.gs td{border-top:3px solid var(--line)}
+.tbl td.st-b{box-shadow:inset 6px 0 0 var(--bad)}
+.tbl td.st-w{box-shadow:inset 6px 0 0 #E0A21A}
+.tbl td.st-o{box-shadow:inset 6px 0 0 var(--ok)}
+.tbl td.st-f{box-shadow:inset 6px 0 0 var(--line)}
+.tbl td.st-b,.tbl td.st-w,.tbl td.st-o,.tbl td.st-f{padding-left:16px}
+.pill{font-weight:700}
+.tone-warn{color:var(--c-dev);font-weight:600}
+td.nec{font-weight:700;color:var(--c-fio)}
+.kpi{border-top:4px solid var(--line)}
+.kpi.ok{border-top-color:var(--ok)}.kpi.bad{border-top-color:var(--bad)}
+#sec-res .kpi:nth-child(1){border-top-color:var(--c-mal)}
+#sec-res .kpi:nth-child(2){border-top-color:var(--c-fio)}
+#sec-res .kpi:nth-child(3){border-top-color:var(--accent)}
+#sec-res .kpi:nth-child(4){border-top-color:var(--c-art)}
+#sec-res .kpi.bad{border-top-color:var(--bad)}
+.kpi .v{font-weight:600}
+.card.sec>.hd{border-bottom:2px solid var(--sc)}
+.card.sec>.hd h2{font-size:16px}
+.s-fio{--sc:var(--c-fio);--sc-soft:var(--c-fio-soft)}
+.s-mal{--sc:var(--c-mal);--sc-soft:var(--c-mal-soft)}
+.card.sec .tbl thead th{color:var(--sc);background:transparent;border-bottom:2px solid var(--sc)}
+.ed tr td{border-bottom:1px solid color-mix(in srgb,var(--ink) 12%,var(--surface))}
+.ed tr.ent:nth-child(even) td{background:color-mix(in srgb,var(--c-fio-soft) 80%,var(--surface))}
+.ed tr.mal:nth-child(even) td{background:color-mix(in srgb,var(--c-mal-soft) 80%,var(--surface))}
+/* escolha de lotes */
+.pk{position:relative;display:block}
+.pk .cell{padding-right:26px}
+.pkb{position:absolute;right:2px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:var(--sc,var(--accent));font-size:14px;line-height:1;width:24px;height:calc(100% - 4px);cursor:pointer;border-radius:4px}
+.pkb:hover,.pkb:focus-visible{background:var(--sc-soft,var(--accent-soft))}
+.pkpop{position:absolute;z-index:60;background:var(--surface);color:var(--ink);border:2px solid var(--accent);border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.28);max-height:min(380px,70vh);overflow:auto;padding:6px}
+.pkh{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;font-weight:700;color:var(--muted);padding:6px 8px}
+.pkg{font-size:11.5px;font-weight:700;color:var(--accent);padding:8px 8px 2px}
+.pke{padding:10px;font-size:13px;color:var(--muted)}
+.pki{display:grid;grid-template-columns:20px minmax(0,1fr) auto;gap:2px 8px;align-items:center;width:100%;text-align:left;border:1px solid transparent;background:transparent;color:inherit;padding:7px 8px;border-radius:6px;cursor:pointer;font:inherit}
+.pki:hover{background:var(--accent-soft)}
+.pki.on{background:var(--accent-soft);border-color:var(--accent)}
+.pkc{grid-row:1/3;color:var(--accent);font-size:15px}
+.pkl{font-family:var(--f-mono);font-weight:600;overflow-wrap:anywhere}
+.pks{grid-column:3;grid-row:1;white-space:nowrap;font-family:var(--f-mono);font-size:12.5px;text-align:right}
+.pkf{grid-column:2/4;font-size:12px;color:var(--muted)}
+.pkx{display:flex;justify-content:flex-end;padding:6px 4px 2px;position:sticky;bottom:0;background:var(--surface)}
+@media print{.pkpop{display:none!important}}
+
 </style>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -307,8 +358,8 @@ function calc(o){
   mal.forEach(m=>{let x=byId.get(m.artigoId);if(!x&&A.length===1)x=A[0];const q=num(m.qtd);if(x)x.malha+=q;else malhaSem+=q});
   if(malhaSem>0.005)warn.push({t:'b',m:'Há '+fkg(malhaSem)+' kg de malha entregue sem artigo associado. Escolha o artigo em cada saída.'});
   const Y=new Map();
-  const getY=(fio,fromComp)=>{const k=key(fio);if(!Y.has(k))Y.set(k,{k,fio:String(fio).trim(),entradas:0,devolucoes:0,usado:0,consumo:0,comp:false,qs:[],lots:new Map()});const y=Y.get(k);if(fromComp)y.comp=true;return y};
-  A.forEach(x=>x.fios.forEach(f=>{const y=getY(f.fio,true);f.usado=x.malha*f.pct/100;y.usado+=f.usado;y.consumo+=f.usado*(1+x.qprev/100);y.qs.push(x.qprev)}));
+  const getY=(fio,fromComp)=>{const k=key(fio);if(!Y.has(k))Y.set(k,{k,fio:String(fio).trim(),entradas:0,devolucoes:0,usado:0,consumo:0,nec:0,comp:false,qs:[],lots:new Map()});const y=Y.get(k);if(fromComp)y.comp=true;return y};
+  A.forEach(x=>x.fios.forEach(f=>{const y=getY(f.fio,true);f.usado=x.malha*f.pct/100;y.usado+=f.usado;y.consumo+=f.usado*(1+x.qprev/100);y.qs.push(x.qprev);y.nec+=x.qtd*f.pct/100*(1+x.qprev/100)}));
   ent.forEach((e,i)=>{
     if(!key(e.fio)){if(num(e.qtd))warn.push({t:'w',m:'Um movimento de fio não tem o fio escolhido (guia '+esc(e.guia||'—')+').'});return}
     const y=getY(e.fio,false),q=num(e.qtd),dev=e.tipo==='devolucao';
@@ -319,7 +370,7 @@ function calc(o){
     if(e.data&&e.data<l.first)l.first=e.data;
   });
   const Yr=[...Y.values()].map(y=>{
-    y.liq=y.entradas-y.devolucoes;y.quebraKg=y.liq-y.usado;
+    y.liq=y.entradas-y.devolucoes;y.quebraKg=y.liq-y.usado;y.faltaRec=Math.max(0,y.nec-y.liq);
     y.real=(y.usado>0&&y.liq>0)?y.quebraKg/y.liq*100:null;
     y.prev=y.usado>0?(y.consumo-y.usado)/y.usado*100:(y.qs.length?y.qs.reduce((s,v)=>s+v,0)/y.qs.length:null);
     y.stockSigned=y.liq-y.consumo;
@@ -350,7 +401,7 @@ function calc(o){
   const sC=withUse.reduce((s,y)=>s+y.consumo,0),sU2=withUse.reduce((s,y)=>s+y.usado,0);
   const T={qtd:A.reduce((s,x)=>s+x.qtd,0),malha:A.reduce((s,x)=>s+x.malha,0)+malhaSem,
     liq:Yr.reduce((s,y)=>s+y.liq,0),entradas:Yr.reduce((s,y)=>s+y.entradas,0),devolucoes:Yr.reduce((s,y)=>s+y.devolucoes,0),
-    usado:Yr.reduce((s,y)=>s+y.usado,0),consumo:Yr.reduce((s,y)=>s+y.consumo,0),
+    nec:Yr.reduce((s,y)=>s+y.nec,0),faltaRec:Yr.reduce((s,y)=>s+y.faltaRec,0),usado:Yr.reduce((s,y)=>s+y.usado,0),consumo:Yr.reduce((s,y)=>s+y.consumo,0),
     real:sL>0?(sL-sU)/sL*100:null,quebraKg:sL-sU,prev:sU2>0?(sC-sU2)/sU2*100:null,
     stock:Yr.reduce((s,y)=>s+y.lotList.reduce((t,l)=>t+Math.max(0,l.stock),0),0),falta:Yr.reduce((s,y)=>s+y.falta,0)};
   T.faltaMalha=Math.max(0,T.qtd-T.malha);T.entPct=T.qtd>0?T.malha/T.qtd*100:0;
@@ -455,6 +506,7 @@ function toast(msg,undo){
 
 /* ============ navegação ============ */
 function route(){
+  closePk();
   const h=location.hash.replace(/^#/,'');
   if(h.startsWith('enc-')){S.view='detail';S.openId=h.slice(4)}
   else if(h==='stock')S.view='stock';else if(h==='lotes')S.view='lotes';else if(h==='quebras')S.view='quebras';else if(h==='dados')S.view='dados';
@@ -510,7 +562,7 @@ function viewList(v){
     for(let k=0;k<n;k++){
       const x=A[k];
       h+='<tr class="'+zc+(k===0?' gs':'')+(k<n-1?' sub':'')+'" data-go="'+esc(o.id)+'" tabindex="0">';
-      if(k===0)h+='<td class="enc"'+rs+'><a href="#enc-'+esc(o.id)+'">'+esc(o.num||'(sem número)')+'</a></td><td'+rs+'>'+esc(o.cliente)+'</td><td class="enc refc"'+rs+'>'+esc(o.ref||'—')+'</td><td class="muted"'+rs+'>'+fdate(o.data)+'</td>';
+      if(k===0)h+='<td class="enc st-'+devInfo(c,o).k+'"'+rs+'><a href="#enc-'+esc(o.id)+'">'+esc(o.num||'(sem número)')+'</a></td><td'+rs+'>'+esc(o.cliente)+'</td><td class="enc refc"'+rs+'>'+esc(o.ref||'—')+'</td><td class="muted"'+rs+'>'+fdate(o.data)+'</td>';
       if(x)h+='<td><div class="trunc">'+esc(x.nome)+'</div></td><td class="num">'+fkg(x.qtd)+'</td><td class="num">'+fkg(x.malha)+bar(x.entPct)+'</td><td class="num">'+fkg(x.falta)+'</td>';
       else h+='<td class="muted">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td>';
       if(k===0)h+='<td class="num'+(T.falta>0.05?' tone-bad':'')+'"'+rs+'>'+(o.estado==='fechada'?'—':fkg(T.falta>0.05?-T.falta:T.stock))+'</td>'+
@@ -530,7 +582,8 @@ function I(c,id,p,val,o){o=o||{};const t=o.t||'t';
   const f=[c,id,o.i==null?'':o.i,p].join(':');
   const ty=t==='d'?'date':'text';
   const v=t==='n'?inputNum(val):(val==null?'':val);
-  return '<input class="cell'+(t==='n'?' n':'')+(o.cls?' '+o.cls:'')+'" type="'+ty+'" '+(t==='n'?'inputmode="decimal" ':'')+'data-c="'+c+'" data-id="'+esc(id)+'" data-p="'+p+'" data-t="'+t+'" data-f="'+esc(f)+'"'+(o.i!=null?' data-i="'+o.i+'"':'')+(o.list?' list="'+o.list+'"':'')+(o.ph?' placeholder="'+esc(o.ph)+'"':'')+(o.label?' aria-label="'+esc(o.label)+'"':'')+' value="'+esc(v)+'">'}
+  const inp='<input class="cell'+(t==='n'?' n':'')+(o.cls?' '+o.cls:'')+'" type="'+ty+'" '+(t==='n'?'inputmode="decimal" ':'')+'data-c="'+c+'" data-id="'+esc(id)+'" data-p="'+p+'" data-t="'+t+'" data-f="'+esc(f)+'"'+(o.i!=null?' data-i="'+o.i+'"':'')+(o.list&&!o.pick?' list="'+o.list+'"':'')+(o.ph?' placeholder="'+esc(o.ph)+'"':'')+(o.label?' aria-label="'+esc(o.label)+'"':'')+' value="'+esc(v)+'">';
+  return o.pick?'<div class="pk">'+inp+'<button type="button" class="pkb" data-pick="'+o.pick+'" data-for="'+esc(f)+'" title="Escolher da lista de lotes desta encomenda" aria-label="Escolher lote">▾</button></div>':inp}
 function SEL(c,id,p,val,list,o){o=o||{};const f=[c,id,'',p].join(':');
   return '<select class="cell" data-c="'+c+'" data-id="'+esc(id)+'" data-p="'+p+'" data-t="t" data-f="'+esc(f)+'"'+(o.label?' aria-label="'+esc(o.label)+'"':'')+'>'+opts(list,val)+'</select>'}
 const yarnNames=o=>{const s=new Map();o.artigos.forEach(a=>a.fios.forEach(f=>{if(key(f.fio))s.set(key(f.fio),String(f.fio).trim())}));return [...s.values()]};
@@ -545,6 +598,55 @@ function renderDetail(keepFocus){
   renderDados();renderHead();renderArt();renderMov();renderRes();fillLists();
   if(focusKey){const el=$('[data-f="'+focusKey.replace(/"/g,'\\"')+'"]');if(el){el.focus();if(el.select&&el.type==='text'&&!keepFocus)el.select()}focusKey=null}
 }
+
+/* ===== lista de lotes da encomenda (entradas, devoluções e malha) ===== */
+function lotesOrder(o){
+  const M=new Map();
+  o.entradas.forEach(e=>{const l=String(e.lote==null?'':e.lote).trim();if(!l)return;
+    if(!M.has(l))M.set(l,{lote:l,fios:new Set(),liq:0});const r=M.get(l);if(e.fio)r.fios.add(String(e.fio).trim());r.liq+=(e.tipo==='devolucao'?-1:1)*num(e.qtd)});
+  return [...M.values()];
+}
+function closePk(){const p=$('#pkpop');if(p)p.remove()}
+function openPick(b){
+  const o=curOrder();if(!o)return;
+  closePk();
+  const mode=b.dataset.pick,fkey=b.dataset.for;
+  const getEl=()=>document.querySelector('[data-f="'+fkey.replace(/"/g,'\\"')+'"]');
+  const el0=getEl();if(!el0)return;
+  const row=findTarget(o,el0);if(!row)return;
+  const all=lotesOrder(o);
+  let pref;
+  if(mode==='mal'){const a=o.artigos.find(x=>x.id===row.artigoId)||(o.artigos.length===1?o.artigos[0]:null);pref=new Set(a?a.fios.map(f=>key(f.fio)):[])}
+  else pref=new Set(row.fio?[key(row.fio)]:[]);
+  const isPref=l=>[...l.fios].some(f=>pref.has(key(f)));
+  const A=all.filter(isPref),B=all.filter(l=>!isPref(l));
+  const pop=document.createElement('div');pop.id='pkpop';pop.className='pkpop';
+  const draw=()=>{
+    const el=getEl();const cur=mode==='mal'?loteTokens(el?el.value:'').map(loteKey):[loteKey(el?el.value:'')];
+    const item=l=>'<button type="button" class="pki'+(cur.includes(loteKey(l.lote))?' on':'')+'" data-l="'+esc(l.lote)+'"><span class="pkc">'+(mode==='mal'?(cur.includes(loteKey(l.lote))?'☑':'☐'):(cur.includes(loteKey(l.lote))?'●':'○'))+'</span><span class="pkl">'+esc(l.lote)+'</span><span class="pkf">'+esc([...l.fios].join(' / ')||'—')+'</span><span class="pks">'+fkg(l.liq)+' kg</span></button>';
+    pop.innerHTML='<div class="pkh">'+(mode==='mal'?'Lotes desta encomenda · pode escolher vários':'Lotes desta encomenda')+'</div>'+
+     (all.length?(A.length?'<div class="pkg">'+(mode==='mal'?'Fios deste artigo':'Mesmo fio')+'</div>'+A.map(item).join(''):'')+(B.length?'<div class="pkg">'+(A.length?'Outros fios':'Lotes')+'</div>'+B.map(item).join(''):''):'<div class="pke">Ainda não há lotes lançados nesta encomenda. Lance primeiro a entrada do fio, ou escreva o lote no campo.</div>')+
+     (mode==='mal'?'<div class="pkx"><button type="button" class="btn sm pri" id="pk-ok">Concluído</button></div>':'');
+    pop.querySelectorAll('.pki').forEach(x=>x.onclick=()=>{
+      const el=getEl();if(!el)return;const lote=x.dataset.l;
+      if(mode==='mal'){const t=loteTokens(el.value);const i=t.findIndex(y=>loteKey(y)===loteKey(lote));if(i>=0)t.splice(i,1);else t.push(lote);el.value=t.join(' + ');onChange(el);draw()}
+      else{el.value=lote;onChange(el);closePk()}
+    });
+    const ok=pop.querySelector('#pk-ok');if(ok)ok.onclick=closePk;
+  };
+  document.body.appendChild(pop);draw();
+  const r=b.getBoundingClientRect(),w=Math.min(380,window.innerWidth-16);
+  pop.style.width=w+'px';
+  pop.style.left=Math.max(8,Math.min(r.right+window.scrollX-w,window.scrollX+window.innerWidth-w-8))+'px';
+  const below=r.bottom+window.scrollY+4,h=pop.offsetHeight;
+  pop.style.top=((r.bottom+h+8>window.innerHeight&&r.top>h+8)?(r.top+window.scrollY-h-4):below)+'px';
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-pick]');
+  if(b){e.preventDefault();openPick(b);return}
+  if(!e.composedPath().some(n=>n&&n.id==='pkpop'))closePk();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closePk()});
 function fillLists(){
   const o=curOrder();if(!o)return;
   $('#dl-cli').innerHTML=allClients().map(c=>'<option value="'+esc(c)+'">').join('');
@@ -595,14 +697,14 @@ function renderMov(){
     '<td>'+SEL('e',e.id,'tipo',e.tipo==='devolucao'?'devolucao':'entrada',[{v:'entrada',l:'Entrada'},{v:'devolucao',l:'Devolução'}],{label:'Tipo'})+'</td>'+
     '<td>'+I('e',e.id,'guia',e.guia,{label:'Guia'})+'</td><td>'+I('e',e.id,'data',e.data,{t:'d',label:'Data'})+'</td>'+
     '<td>'+SEL('e',e.id,'fio',e.fio||'',[{v:'',l:'— escolher fio —'},...fioList(e.fio).map(n=>({v:n,l:n}))],{label:'Fio'})+'</td>'+
-    '<td>'+I('e',e.id,'lote',e.lote,{list:'dl-lotes',label:'Lote'})+'</td><td>'+I('e',e.id,'qtd',e.qtd,{t:'n',label:'Quantidade kg'})+'</td><td>'+(e.tipo==='devolucao'?'':I('e',e.id,'paletes',e.paletes,{t:'n',label:'Número de paletes',ph:'1'}))+'</td><td>'+I('e',e.id,'nota',e.nota,{label:'Nota'})+'</td><td><button class="btn sm" type="button" data-print="label" data-id="'+esc(e.id)+'" title="Imprimir etiqueta A5">Etiqueta</button></td>'+
+    '<td>'+I('e',e.id,'lote',e.lote,{pick:'ent',label:'Lote'})+'</td><td>'+I('e',e.id,'qtd',e.qtd,{t:'n',label:'Quantidade kg'})+'</td><td>'+(e.tipo==='devolucao'?'':I('e',e.id,'paletes',e.paletes,{t:'n',label:'Número de paletes',ph:'1'}))+'</td><td>'+I('e',e.id,'nota',e.nota,{label:'Nota'})+'</td><td><button class="btn sm" type="button" data-print="label" data-id="'+esc(e.id)+'" title="Imprimir etiqueta A5">Etiqueta</button></td>'+
     '<td><button class="x" type="button" aria-label="Eliminar linha" data-del="ent" data-id="'+esc(e.id)+'">✕</button></td></tr>').join(''):'<tr><td colspan="10" class="muted" style="padding:14px 10px">Sem movimentos de fio. Use “+ Entrada de fio” quando o cliente entregar fio.</td></tr>')+
   '</tbody></table></div></div>'+
   '<div class="blk blk-mal"><div class="bh"><h3>Saídas de malha</h3><span style="flex:1"></span><button class="btn sm c-mal" type="button" data-add="mal">+ Saída de malha</button></div>'+
   '<div class="tw card" style="box-shadow:none"><table class="ed"><thead><tr><th style="width:13%">Guia</th><th style="width:14%">Data</th><th style="width:24%">Artigo</th><th style="width:22%">Lote(s) de fio</th><th class="r" style="width:8%">Qtd (kg)</th><th style="width:14%">Nota</th><th style="width:5%"></th></tr></thead><tbody>'+
   (o.malha.length?o.malha.map(m=>'<tr class="mal"><td>'+I('m',m.id,'guia',m.guia,{label:'Guia'})+'</td><td>'+I('m',m.id,'data',m.data,{t:'d',label:'Data'})+'</td>'+
     '<td>'+SEL('m',m.id,'artigoId',m.artigoId||'',[{v:'',l:'— escolher artigo —'},...artList],{label:'Artigo'})+'</td>'+
-    '<td>'+I('m',m.id,'lote',m.lote,{list:'dl-lotes',ph:'Ex.: 3203 + 48762',label:'Lotes'})+'</td><td>'+I('m',m.id,'qtd',m.qtd,{t:'n',label:'Quantidade kg'})+'</td><td>'+I('m',m.id,'nota',m.nota,{label:'Nota'})+'</td>'+
+    '<td>'+I('m',m.id,'lote',m.lote,{pick:'mal',ph:'Escolha ▾ ou escreva 3203 + 48762',label:'Lotes'})+'</td><td>'+I('m',m.id,'qtd',m.qtd,{t:'n',label:'Quantidade kg'})+'</td><td>'+I('m',m.id,'nota',m.nota,{label:'Nota'})+'</td>'+
     '<td><button class="x" type="button" aria-label="Eliminar linha" data-del="mal" data-id="'+esc(m.id)+'">✕</button></td></tr>').join(''):'<tr><td colspan="7" class="muted" style="padding:14px 10px">Sem saídas de malha.</td></tr>')+
   '</tbody></table></div></div></div>';
 }
@@ -616,14 +718,14 @@ function renderRes(){
    '<div class="kpi '+(t==='bad'?'bad':t==='ok'?'ok':'')+'"><div class="l">Quebra real '+(o.estado==='fechada'?'':'(provisória)')+'</div><div class="v">'+fpct(T.real)+' <small>prev. '+fpct(T.prev)+'</small></div><div class="n">'+(T.desvio==null?'Sem dados suficientes':'Desvio '+fpp(T.desvio)+(T.quebraKg>=0?' · '+fkg(T.quebraKg)+' kg de quebra':''))+'</div></div>'+
    '<div class="kpi'+(T.falta>0.05?' bad':'')+'"><div class="l">Stock de fio (teórico)</div><div class="v">'+fkg(T.falta>0.05?-T.falta:T.stock)+' <small>kg</small></div><div class="n">'+(T.falta>0.05?'fio em falta':'ainda na casa do cliente / a devolver')+'</div></div></div>'+
   (o.estado!=='fechada'?'<div class="muted" style="font-size:12.5px">A quebra real só fica definitiva quando o fio que sobrou for devolvido e a encomenda passar a “Fechada”. Até lá, o fio ainda em stock conta como quebra.</div>':'')+
-  '<div class="card"><div class="hd"><h2>Quebras por fio</h2><span class="muted">Fio recebido contra fio que a malha entregue realmente consome, segundo a % de cada artigo.</span></div><div class="tw"><table class="tbl"><thead><tr><th>Fio</th><th class="r">Entradas</th><th class="r">Devoluções</th><th class="r">Líquido</th><th class="r">Consumo malha</th><th class="r">Quebra kg</th><th class="r">Quebra real</th><th class="r">Prevista</th><th class="r">Desvio</th><th class="r">Stock teórico</th></tr></thead><tbody>'+
-   (c.Y.length?c.Y.map(y=>{const d=(y.real!=null&&y.prev!=null)?y.real-y.prev:null;return '<tr><td>'+esc(y.fio)+'</td><td class="num">'+fkg(y.entradas)+'</td><td class="num">'+fkg(y.devolucoes)+'</td><td class="num">'+fkg(y.liq)+'</td><td class="num">'+fkg(y.usado)+'</td><td class="num">'+(y.real!=null?fkg(y.quebraKg):'—')+'</td><td class="num tone-'+tone(d)+'">'+fpct(y.real)+'</td><td class="num muted">'+fpct(y.prev)+'</td><td class="num tone-'+tone(d)+'">'+fpp(d)+'</td><td class="num'+(y.falta>0.05?' tone-bad':'')+'">'+fkg(y.falta>0.05?-y.falta:y.lotList.reduce((s,l)=>s+Math.max(0,l.stock),0))+'</td></tr>'}).join('')+
-   '<tr class="tot"><td>Total</td><td class="num">'+fkg(T.entradas)+'</td><td class="num">'+fkg(T.devolucoes)+'</td><td class="num">'+fkg(T.liq)+'</td><td class="num">'+fkg(T.usado)+'</td><td class="num">'+(T.real!=null?fkg(T.quebraKg):'—')+'</td><td class="num tone-'+t+'">'+fpct(T.real)+'</td><td class="num muted">'+fpct(T.prev)+'</td><td class="num tone-'+t+'">'+fpp(T.desvio)+'</td><td class="num">'+fkg(T.falta>0.05?-T.falta:T.stock)+'</td></tr>':'<tr><td colspan="10" class="muted">Adicione fios à composição dos artigos.</td></tr>')+
+  '<div class="card sec s-fio"><div class="hd"><h2>Quebras por fio</h2><span class="muted">Fio necessário = qtd encomendada × % do fio × (1 + quebra prevista do artigo). Quebra real = fio recebido contra fio que a malha entregue consome.</span></div><div class="tw"><table class="tbl"><thead><tr><th>Fio</th><th class="r">Necessário</th><th class="r">Entradas</th><th class="r">Devoluções</th><th class="r">Líquido</th><th class="r">Falta receber</th><th class="r">Consumo malha</th><th class="r">Quebra kg</th><th class="r">Quebra real</th><th class="r">Prevista</th><th class="r">Stock teórico</th></tr></thead><tbody>'+
+   (c.Y.length?c.Y.map(y=>{const d=(y.real!=null&&y.prev!=null)?y.real-y.prev:null;return '<tr><td>'+esc(y.fio)+'</td><td class="num nec">'+(y.nec>0?fkg(y.nec):'—')+'</td><td class="num">'+fkg(y.entradas)+'</td><td class="num">'+fkg(y.devolucoes)+'</td><td class="num">'+fkg(y.liq)+'</td><td class="num'+(y.faltaRec>0.05?' tone-warn':' muted')+'">'+(y.nec>0?fkg(y.faltaRec):'—')+'</td><td class="num">'+fkg(y.usado)+'</td><td class="num">'+(y.real!=null?fkg(y.quebraKg):'—')+'</td><td class="num tone-'+tone(d)+'">'+fpct(y.real)+'</td><td class="num muted">'+fpct(y.prev)+'</td><td class="num'+(y.falta>0.05?' tone-bad':'')+'">'+fkg(y.falta>0.05?-y.falta:y.lotList.reduce((s,l)=>s+Math.max(0,l.stock),0))+'</td></tr>'}).join('')+
+   '<tr class="tot"><td>Total</td><td class="num nec">'+fkg(T.nec)+'</td><td class="num">'+fkg(T.entradas)+'</td><td class="num">'+fkg(T.devolucoes)+'</td><td class="num">'+fkg(T.liq)+'</td><td class="num'+(T.faltaRec>0.05?' tone-warn':' muted')+'">'+fkg(T.faltaRec)+'</td><td class="num">'+fkg(T.usado)+'</td><td class="num">'+(T.real!=null?fkg(T.quebraKg):'—')+'</td><td class="num tone-'+t+'">'+fpct(T.real)+'</td><td class="num muted">'+fpct(T.prev)+'</td><td class="num">'+fkg(T.falta>0.05?-T.falta:T.stock)+'</td></tr>':'<tr><td colspan="11" class="muted">Adicione fios à composição dos artigos.</td></tr>')+
   '</tbody></table></div></div>'+
-  '<div class="card"><div class="hd"><h2>Quebras por artigo</h2><span class="muted">A quebra de cada fio é repartida pelos artigos conforme o fio que cada um consome.</span></div><div class="tw"><table class="tbl"><thead><tr><th>Artigo</th><th class="r">Encomendado</th><th class="r">Entregue</th><th class="r">Em falta</th><th>Composição</th><th class="r">Fio consumido</th><th class="r">Quebra kg</th><th class="r">Quebra real</th><th class="r">Prevista</th><th class="r">Desvio</th></tr></thead><tbody>'+
-   c.A.map(x=>{const d=(x.real!=null)?x.real-x.qprev:null;return '<tr><td>'+esc(x.nome)+'</td><td class="num">'+fkg(x.qtd)+'</td><td class="num">'+fkg(x.malha)+bar(x.entPct)+'</td><td class="num">'+fkg(x.falta)+'</td><td class="muted" style="font-size:12.5px">'+(x.fios.map(f=>esc(f.fio)+' '+nf(f.pct,0,2)+'%').join('<br>')||'—')+'</td><td class="num">'+fkg(x.usado)+'</td><td class="num">'+(x.real!=null?fkg(x.perda):'—')+'</td><td class="num tone-'+tone(d)+'">'+fpct(x.real)+'</td><td class="num muted">'+fpct(x.qprev)+'</td><td class="num tone-'+tone(d)+'">'+fpp(d)+'</td></tr>'}).join('')+
+  '<div class="card sec s-art"><div class="hd"><h2>Quebras por artigo</h2><span class="muted">A quebra de cada fio é repartida pelos artigos conforme o fio que cada um consome.</span></div><div class="tw"><table class="tbl"><thead><tr><th>Artigo</th><th class="r">Encomendado</th><th class="r">Entregue</th><th class="r">Em falta</th><th>Composição</th><th class="r">Fio consumido</th><th class="r">Quebra kg</th><th class="r">Quebra real</th><th class="r">Prevista</th></tr></thead><tbody>'+
+   c.A.map(x=>{const d=(x.real!=null)?x.real-x.qprev:null;return '<tr><td>'+esc(x.nome)+'</td><td class="num">'+fkg(x.qtd)+'</td><td class="num">'+fkg(x.malha)+bar(x.entPct)+'</td><td class="num">'+fkg(x.falta)+'</td><td class="muted" style="font-size:12.5px">'+(x.fios.map(f=>esc(f.fio)+' '+nf(f.pct,0,2)+'%').join('<br>')||'—')+'</td><td class="num">'+fkg(x.usado)+'</td><td class="num">'+(x.real!=null?fkg(x.perda):'—')+'</td><td class="num tone-'+tone(d)+'">'+fpct(x.real)+'</td><td class="num muted">'+fpct(x.qprev)+'</td></tr>'}).join('')+
   '</tbody></table></div></div>'+
-  '<div class="card"><div class="hd"><h2>Stock por lote</h2><span class="muted">O consumo teórico (com quebra prevista) sai dos lotes mais antigos primeiro.</span></div><div class="tw"><table class="tbl"><thead><tr><th>Fio</th><th>Lote</th><th class="r">Entradas</th><th class="r">Devoluções</th><th class="r">Consumo teórico</th><th class="r">Stock</th></tr></thead><tbody>'+
+  '<div class="card sec s-mal"><div class="hd"><h2>Stock por lote</h2><span class="muted">O consumo teórico (com quebra prevista) sai dos lotes mais antigos primeiro.</span></div><div class="tw"><table class="tbl"><thead><tr><th>Fio</th><th>Lote</th><th class="r">Entradas</th><th class="r">Devoluções</th><th class="r">Consumo teórico</th><th class="r">Stock</th></tr></thead><tbody>'+
    (c.Y.some(y=>y.lotList.length||y.falta>0.05)?c.Y.map(y=>y.lotList.map(l=>'<tr><td>'+esc(y.fio)+'</td><td class="enc">'+esc(l.lote)+'</td><td class="num">'+fkg(l.entradas)+'</td><td class="num">'+fkg(l.devolucoes)+'</td><td class="num">'+fkg(l.consumo)+'</td><td class="num'+(l.stock<-0.005?' tone-bad':'')+'">'+fkg(l.stock)+'</td></tr>').join('')+(y.falta>0.05?'<tr><td>'+esc(y.fio)+'</td><td class="muted">sem fio recebido</td><td class="num">—</td><td class="num">—</td><td class="num">'+fkg(y.falta)+'</td><td class="num tone-bad">'+fkg(-y.falta)+'</td></tr>':'')).join(''):'<tr><td colspan="6" class="muted">Sem entradas de fio.</td></tr>')+
   '</tbody></table></div></div></div>';
 }
@@ -1064,8 +1166,8 @@ function orderPrintHTML(o){
   h+='<h2>Resumo'+(o.estado==='fechada'?'':' (quebra provisória)')+'</h2>'+pt(['Malha entregue','Malha encomendada','Fio líquido','Quebra real','Quebra prevista','Desvio','Stock fio (teórico)'],
    [[fkg(T.malha)+' kg',fkg(T.qtd)+' kg',fkg(T.liq)+' kg',fpct(T.real),fpct(T.prev),fpp(T.desvio),fkg(T.falta>0.05?-T.falta:T.stock)+' kg']],[0,1,2,3,4,5,6]);
   if(c.warn.length)h+=c.warn.map(w=>'<div class="pw">⚠ '+w.m+'</div>').join('');
-  h+='<h2>Quebras por fio</h2>'+pt(['Fio','Entradas','Devoluções','Líquido','Consumo malha','Quebra kg','Quebra real','Prevista','Stock teórico'],
-   c.Y.map(y=>[E(y.fio),fkg(y.entradas),fkg(y.devolucoes),fkg(y.liq),fkg(y.usado),y.real!=null?fkg(y.quebraKg):'—',fpct(y.real),fpct(y.prev),fkg(y.falta>0.05?-y.falta:y.lotList.reduce((s,l)=>s+Math.max(0,l.stock),0))]),[1,2,3,4,5,6,7,8]);
+  h+='<h2>Quebras por fio</h2>'+pt(['Fio','Necessário','Entradas','Devoluções','Líquido','Falta receber','Consumo malha','Quebra kg','Quebra real','Prevista','Stock teórico'],
+   c.Y.map(y=>[E(y.fio),y.nec>0?fkg(y.nec):'—',fkg(y.entradas),fkg(y.devolucoes),fkg(y.liq),y.nec>0?fkg(y.faltaRec):'—',fkg(y.usado),y.real!=null?fkg(y.quebraKg):'—',fpct(y.real),fpct(y.prev),fkg(y.falta>0.05?-y.falta:y.lotList.reduce((s,l)=>s+Math.max(0,l.stock),0))]),[1,2,3,4,5,6,7,8,9,10]);
   h+='<h2>Quebras por artigo</h2>'+pt(['Artigo','Encomendado','Entregue','Em falta','Fio consumido','Quebra kg','Quebra real','Prevista'],
    c.A.map(x=>[E(x.nome),fkg(x.qtd),fkg(x.malha),fkg(x.falta),fkg(x.usado),x.real!=null?fkg(x.perda):'—',fpct(x.real),fpct(x.qprev)]),[1,2,3,4,5,6,7]);
   const L=[];c.Y.forEach(y=>{y.lotList.forEach(l=>L.push([E(y.fio),E(l.lote),fkg(l.entradas),fkg(l.devolucoes),fkg(l.consumo),fkg(l.stock)]));if(y.falta>0.05)L.push([E(y.fio),'sem fio recebido','—','—',fkg(y.falta),fkg(-y.falta)])});
