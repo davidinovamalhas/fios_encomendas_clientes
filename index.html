@@ -348,6 +348,8 @@ const coll=(a,b)=>String(a).localeCompare(String(b),'pt',{numeric:true,sensitivi
 const inputNum=v=>(v==null||v==='')?'':String(v).replace('.',',');
 
 /* ============ cálculos ============ */
+const lotNorm=t=>String(t==null?'':t).toUpperCase().replace(/\s+/g,'').replace(/[\/.]/g,'-');
+function lotMatch(tok,lote){const a=lotNorm(tok),b=lotNorm(lote);if(!a||!b)return false;if(a===b)return true;const sh=a.length<b.length?a:b,lg=a.length<b.length?b:a;return sh.length>=5&&lg.endsWith(sh)&&lg[lg.length-sh.length-1]==='-'}
 function calc(o){
   const arts=o.artigos||[],ent=o.entradas||[],mal=o.malha||[],warn=[];
   const A=arts.map(a=>({id:a.id,nome:a.nome||'(sem nome)',qtd:num(a.qtd),qprev:num(a.qprev),malha:0,
@@ -358,13 +360,16 @@ function calc(o){
   mal.forEach(m=>{let x=byId.get(m.artigoId);if(!x&&A.length===1)x=A[0];const q=num(m.qtd);if(x)x.malha+=q;else malhaSem+=q});
   if(malhaSem>0.005)warn.push({t:'b',m:'Há '+fkg(malhaSem)+' kg de malha entregue sem artigo associado. Escolha o artigo em cada saída.'});
   const Y=new Map();
-  const getY=(fio,fromComp)=>{const k=key(fio);if(!Y.has(k))Y.set(k,{k,fio:String(fio).trim(),entradas:0,devolucoes:0,usado:0,consumo:0,nec:0,comp:false,qs:[],lots:new Map()});const y=Y.get(k);if(fromComp)y.comp=true;return y};
+  const getY=(fio,fromComp)=>{const k=key(fio);if(!Y.has(k))Y.set(k,{k,fio:String(fio).trim(),entradas:0,devolucoes:0,usado:0,consumo:0,nec:0,comp:false,qs:[],lines:[],lots:new Map()});const y=Y.get(k);if(fromComp)y.comp=true;return y};
   A.forEach(x=>x.fios.forEach(f=>{const y=getY(f.fio,true);f.usado=x.malha*f.pct/100;y.usado+=f.usado;y.consumo+=f.usado*(1+x.qprev/100);y.qs.push(x.qprev);y.nec+=x.qtd*f.pct/100*(1+x.qprev/100)}));
+  mal.forEach((m,mi)=>{let x=byId.get(m.artigoId);if(!x&&A.length===1)x=A[0];if(!x)return;const q=num(m.qtd);if(!q)return;const tok=loteTokens(m.lote);
+    x.fios.forEach(f=>{const y=Y.get(f.k);if(y)y.lines.push({amount:q*f.pct/100*(1+x.qprev/100),tok,data:m.data||'',ord:mi})})});
   ent.forEach((e,i)=>{
     if(!key(e.fio)){if(num(e.qtd))warn.push({t:'w',m:'Um movimento de fio não tem o fio escolhido (guia '+esc(e.guia||'—')+').'});return}
     const y=getY(e.fio,false),q=num(e.qtd),dev=e.tipo==='devolucao';
     if(dev)y.devolucoes+=q;else y.entradas+=q;
-    const lk=String(e.lote==null?'':e.lote).trim()||'(sem lote)';
+    let lk=String(e.lote==null?'':e.lote).trim()||'(sem lote)';
+    if(lk!=='(sem lote)'&&!y.lots.has(lk)){for(const k2 of y.lots.keys()){if(k2!=='(sem lote)'&&lotMatch(lk,k2)){lk=k2;break}}}   // mesmo lote escrito com/sem prefixo
     if(!y.lots.has(lk))y.lots.set(lk,{lote:lk,entradas:0,devolucoes:0,first:e.data||'9999',ord:i});
     const l=y.lots.get(lk);if(dev)l.devolucoes+=q;else l.entradas+=q;
     if(e.data&&e.data<l.first)l.first=e.data;
@@ -374,10 +379,23 @@ function calc(o){
     y.real=(y.usado>0&&y.liq>0)?y.quebraKg/y.liq*100:null;
     y.prev=y.usado>0?(y.consumo-y.usado)/y.usado*100:(y.qs.length?y.qs.reduce((s,v)=>s+v,0)/y.qs.length:null);
     y.stockSigned=y.liq-y.consumo;
-    let rem=y.consumo;
     y.lotList=[...y.lots.values()].sort((a,b)=>(a.first<b.first?-1:a.first>b.first?1:a.ord-b.ord));
-    y.lotList.forEach(l=>{l.liq=l.entradas-l.devolucoes;const t=Math.max(0,Math.min(l.liq,rem));rem-=t;l.consumo=t;l.stock=l.liq-t});
-    y.falta=Math.max(0,rem);
+    y.lotList.forEach(l=>{l.liq=l.entradas-l.devolucoes;l.consumo=0});
+    /* 1.º: cada saída de malha desconta do(s) lote(s) que nela foram indicados */
+    const pend=[];
+    y.lines.slice().sort((a,b)=>(a.data<b.data?-1:a.data>b.data?1:a.ord-b.ord)).forEach(ln=>{
+      const cands=[];ln.tok.forEach(t=>y.lotList.forEach(l=>{if(!cands.includes(l)&&lotMatch(t,l.lote))cands.push(l)}));
+      if(!cands.length){pend.push(ln);return}
+      let r=ln.amount;
+      cands.forEach(l=>{const take=Math.min(r,Math.max(0,l.liq-l.consumo));l.consumo+=take;r-=take});
+      if(r>0.0001)pend.push({amount:r});   // o lote indicado não chega: o resto sai dos outros lotes
+    });
+    /* 2.º: saídas sem lote, com lote desconhecido ou que excedam o lote indicado descontam dos lotes mais antigos primeiro */
+    let rem=pend.reduce((s,ln)=>s+ln.amount,0);
+    y.lotList.forEach(l=>{const t=Math.max(0,Math.min(l.liq-l.consumo,rem));l.consumo+=t;rem-=t});
+    y.semLote=Math.max(0,rem);
+    y.lotList.forEach(l=>{l.stock=l.liq-l.consumo});
+    y.falta=Math.max(0,y.consumo-y.lotList.reduce((s,l)=>s+Math.max(0,l.liq),0));
     if(!y.comp&&(y.entradas||y.devolucoes))warn.push({t:'w',m:'O fio “'+esc(y.fio)+'” tem movimentos mas não consta da composição de nenhum artigo.'});
     if(y.falta>0.05){
       if(!y.entradas&&!y.devolucoes)warn.push({t:'w',m:'Sem entradas registadas do fio “'+esc(y.fio)+'”: a malha entregue consome '+fkg(y.consumo)+' kg. Lance a entrada para calcular a quebra deste fio.'});
@@ -726,7 +744,7 @@ function renderRes(){
    c.A.map(x=>{const d=(x.real!=null)?x.real-x.qprev:null;return '<tr><td>'+esc(x.nome)+'</td><td class="num">'+fkg(x.qtd)+'</td><td class="num">'+fkg(x.malha)+bar(x.entPct)+'</td><td class="num">'+fkg(x.falta)+'</td><td class="muted" style="font-size:12.5px">'+(x.fios.map(f=>esc(f.fio)+' '+nf(f.pct,0,2)+'%').join('<br>')||'—')+'</td><td class="num">'+fkg(x.usado)+'</td><td class="num">'+(x.real!=null?fkg(x.perda):'—')+'</td><td class="num tone-'+tone(d)+'">'+fpct(x.real)+'</td><td class="num muted">'+fpct(x.qprev)+'</td></tr>'}).join('')+
   '</tbody></table></div></div>'+
   '<div class="card sec s-mal"><div class="hd"><h2>Stock por lote</h2><span class="muted">O consumo teórico (com quebra prevista) sai dos lotes mais antigos primeiro.</span></div><div class="tw"><table class="tbl"><thead><tr><th>Fio</th><th>Lote</th><th class="r">Entradas</th><th class="r">Devoluções</th><th class="r">Consumo teórico</th><th class="r">Stock</th></tr></thead><tbody>'+
-   (c.Y.some(y=>y.lotList.length||y.falta>0.05)?c.Y.map(y=>y.lotList.map(l=>'<tr><td>'+esc(y.fio)+'</td><td class="enc">'+esc(l.lote)+'</td><td class="num">'+fkg(l.entradas)+'</td><td class="num">'+fkg(l.devolucoes)+'</td><td class="num">'+fkg(l.consumo)+'</td><td class="num'+(l.stock<-0.005?' tone-bad':'')+'">'+fkg(l.stock)+'</td></tr>').join('')+(y.falta>0.05?'<tr><td>'+esc(y.fio)+'</td><td class="muted">sem fio recebido</td><td class="num">—</td><td class="num">—</td><td class="num">'+fkg(y.falta)+'</td><td class="num tone-bad">'+fkg(-y.falta)+'</td></tr>':'')).join(''):'<tr><td colspan="6" class="muted">Sem entradas de fio.</td></tr>')+
+   (c.Y.some(y=>y.lotList.length||y.semLote>0.05)?c.Y.map(y=>y.lotList.map(l=>'<tr><td>'+esc(y.fio)+'</td><td class="enc">'+esc(l.lote)+'</td><td class="num">'+fkg(l.entradas)+'</td><td class="num">'+fkg(l.devolucoes)+'</td><td class="num">'+fkg(l.consumo)+'</td><td class="num'+(l.stock<-0.005?' tone-bad':'')+'">'+fkg(l.stock)+'</td></tr>').join('')+(y.semLote>0.05?'<tr><td>'+esc(y.fio)+'</td><td class="muted">sem fio recebido</td><td class="num">—</td><td class="num">—</td><td class="num">'+fkg(y.semLote)+'</td><td class="num tone-bad">'+fkg(-y.semLote)+'</td></tr>':'')).join(''):'<tr><td colspan="6" class="muted">Sem entradas de fio.</td></tr>')+
   '</tbody></table></div></div></div>';
 }
 
@@ -814,7 +832,7 @@ function viewStock(v){
   const lines=[];
   rows.forEach(r=>r.c.Y.forEach(y=>{
     y.lotList.forEach(l=>{if(F.sall||Math.abs(l.stock)>0.005||Math.abs(l.consumo)<0.005&&l.liq>0.005)lines.push({r,y,lote:l.lote,ent:l.entradas,dev:l.devolucoes,cons:l.consumo,stock:l.stock})});
-    if(y.falta>0.05)lines.push({r,y,lote:'sem fio recebido',ent:0,dev:0,cons:y.falta,stock:-y.falta,falta:true});
+    if(y.semLote>0.05)lines.push({r,y,lote:'sem fio recebido',ent:0,dev:0,cons:y.semLote,stock:-y.semLote,falta:true});
   }));
   const byCli=new Map();lines.forEach(l=>{const k=l.r.o.cliente||'(sem cliente)';if(!byCli.has(k))byCli.set(k,[]);byCli.get(k).push(l)});
   const clis=[...byCli.keys()].sort(coll);
@@ -1170,7 +1188,7 @@ function orderPrintHTML(o){
    c.Y.map(y=>[E(y.fio),y.nec>0?fkg(y.nec):'—',fkg(y.entradas),fkg(y.devolucoes),fkg(y.liq),y.nec>0?fkg(y.faltaRec):'—',fkg(y.usado),y.real!=null?fkg(y.quebraKg):'—',fpct(y.real),fpct(y.prev),fkg(y.falta>0.05?-y.falta:y.lotList.reduce((s,l)=>s+Math.max(0,l.stock),0))]),[1,2,3,4,5,6,7,8,9,10]);
   h+='<h2>Quebras por artigo</h2>'+pt(['Artigo','Encomendado','Entregue','Em falta','Fio consumido','Quebra kg','Quebra real','Prevista'],
    c.A.map(x=>[E(x.nome),fkg(x.qtd),fkg(x.malha),fkg(x.falta),fkg(x.usado),x.real!=null?fkg(x.perda):'—',fpct(x.real),fpct(x.qprev)]),[1,2,3,4,5,6,7]);
-  const L=[];c.Y.forEach(y=>{y.lotList.forEach(l=>L.push([E(y.fio),E(l.lote),fkg(l.entradas),fkg(l.devolucoes),fkg(l.consumo),fkg(l.stock)]));if(y.falta>0.05)L.push([E(y.fio),'sem fio recebido','—','—',fkg(y.falta),fkg(-y.falta)])});
+  const L=[];c.Y.forEach(y=>{y.lotList.forEach(l=>L.push([E(y.fio),E(l.lote),fkg(l.entradas),fkg(l.devolucoes),fkg(l.consumo),fkg(l.stock)]));if(y.semLote>0.05)L.push([E(y.fio),'sem fio recebido','—','—',fkg(y.semLote),fkg(-y.semLote)])});
   h+='<h2>Stock por lote</h2>'+pt(['Fio','Lote','Entradas','Devoluções','Consumo teórico','Stock'],L,[2,3,4,5]);
   return h+'</div>';
 }
