@@ -193,7 +193,7 @@ select.cell{padding-right:2px;cursor:pointer}
 .grid .w2{grid-column:span 2}
 .art{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
 .art+.art{margin-top:12px}
-.art .ah{display:grid;grid-template-columns:minmax(200px,1fr) 120px 120px auto;gap:10px;align-items:end;padding:12px;background:var(--surface2);border-bottom:1px solid var(--line)}
+.art .ah{display:grid;grid-template-columns:minmax(200px,1fr) 120px 150px 120px auto;gap:10px;align-items:end;padding:12px;background:var(--surface2);border-bottom:1px solid var(--line)}
 .sumchip{font-size:12px;font-weight:600}
 .warns{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
 .warn{background:var(--warn-soft);color:var(--warn);border-radius:6px;padding:7px 11px;font-size:13px}
@@ -306,6 +306,21 @@ td.nec{font-weight:700;color:var(--c-fio)}
 .pkx{display:flex;justify-content:flex-end;padding:6px 4px 2px;position:sticky;bottom:0;background:var(--surface)}
 @media print{.pkpop{display:none!important}}
 
+/* previsão de entrega e guias */
+:root{--c-pre:#9A4B0C;--c-pre-soft:#FBE5D2}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--c-pre:#F0A060;--c-pre-soft:#3A230F}}
+:root[data-theme="dark"]{--c-pre:#F0A060;--c-pre-soft:#3A230F}
+.s-prev{--sc:var(--c-pre);--sc-soft:var(--c-pre-soft)}
+#sec-prev .kpi{border-top-color:var(--c-pre)}
+#sec-prev .kpi.ok{border-top-color:var(--ok)}#sec-prev .kpi.bad{border-top-color:var(--bad)}
+#sec-prev .kpi.bad .v{color:var(--bad)}#sec-prev .kpi.ok .v{color:var(--ok)}
+.ed tr.mal.gnew:not(:first-child) td{border-top:2px solid var(--c-mal)}
+.ed tr.mal.gcont td{border-top:1px dashed color-mix(in srgb,var(--c-mal) 45%,transparent)}
+.ed tr.mal.gcont td:first-child input{color:var(--muted)}
+.x[data-add]{color:var(--c-mal);font-weight:700}
+
+.cell.req,.ed .cell.req{border-color:var(--bad);background:var(--bad-soft)}
+.cell.req::placeholder{color:var(--bad)}
 </style>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -497,12 +512,26 @@ function applyRemote(list,initial){
   if(S.view!=='detail')renderView();
   else if(openChanged){if(S.orders.has(S.openId))renderDetail(true);else location.hash='#encomendas'}
 }
+/* uma encomenda só é gravada com a quantidade de todos os artigos preenchida */
+function orderIssues(o){
+  const v=[];
+  if(!o)return v;
+  if(!o.artigos.length)v.push('adicione pelo menos um artigo');
+  o.artigos.forEach((a,i)=>{if(!(num(a.qtd)>0))v.push('indique a quantidade encomendada'+(o.artigos.length>1?' do artigo '+(i+1)+(a.nome?' (“'+a.nome+'”)':''):''))});
+  return v;
+}
+const invalidDirty=()=>[...dirty].filter(id=>orderIssues(S.orders.get(id)).length);
+function discardUnsaved(id){
+  clearTimeout(timers.get(id));timers.delete(id);dirty.delete(id);
+  Store.fetchAll().then(l=>{applyRemote(l);if(!dirty.size)setStatus('ok',okText())}).catch(()=>{});
+}
 function scheduleSave(id){
   dirty.add(id);setStatus('p','A guardar…');
   clearTimeout(timers.get(id));timers.set(id,setTimeout(()=>runSave(id),450));
 }
 function runSave(id){
   clearTimeout(timers.get(id));timers.delete(id);
+  {const oo=S.orders.get(id);if(oo&&orderIssues(oo).length){setStatus('err','NÃO GRAVADA — falta a quantidade encomendada');return}}
   const prev=chain.get(id)||Promise.resolve();
   const p=prev.then(async()=>{const o=S.orders.get(id);if(o)await Store.put(o);else await Store.remove(id)})
     .then(()=>{recent.set(id,Date.now());if(!timers.has(id)){dirty.delete(id);if(!dirty.size)setStatus('ok',okText())}})
@@ -512,6 +541,7 @@ function runSave(id){
 function flushAll(){[...timers.keys()].forEach(runSave)}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flushAll()});
 window.addEventListener('pagehide',flushAll);
+window.addEventListener('beforeunload',e=>{if(invalidDirty().length){e.preventDefault();e.returnValue=''}});
 
 /* ============ toast ============ */
 let toastT=null;
@@ -523,13 +553,22 @@ function toast(msg,undo){
 }
 
 /* ============ navegação ============ */
+let lastOpenId=null;
 function route(){
   closePk();
+  if(lastOpenId&&location.hash!=='#enc-'+lastOpenId){
+    const lo=S.orders.get(lastOpenId);
+    if(lo&&orderIssues(lo).length&&dirty.has(lastOpenId)){
+      if(!confirm('A encomenda '+(lo.num||'(sem número)')+' NÃO está gravada porque falta a quantidade encomendada.\n\nOK = sair e descartar as alterações\nCancelar = voltar e preencher a quantidade')){location.hash='#enc-'+lastOpenId;return}
+      discardUnsaved(lastOpenId);
+    }
+  }
   const h=location.hash.replace(/^#/,'');
   if(h.startsWith('enc-')){S.view='detail';S.openId=h.slice(4)}
   else if(h==='stock')S.view='stock';else if(h==='lotes')S.view='lotes';else if(h==='quebras')S.view='quebras';else if(h==='dados')S.view='dados';
   else{S.view='list';S.openId=null}
   $$('#nav a').forEach(a=>{const on=a.dataset.v===S.view||(S.view==='detail'&&a.dataset.v==='list');if(on)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
+  lastOpenId=S.view==='detail'?S.openId:null;
   renderView();window.scrollTo(0,0);
 }
 function renderView(){
@@ -611,7 +650,7 @@ function renderDetail(keepFocus){
   const ae=document.activeElement;if(keepFocus&&ae&&ae.dataset&&ae.dataset.f)focusKey=ae.dataset.f;
   const v=$('#view');
   v.innerHTML='<a class="back" href="#encomendas">← Encomendas</a><div id="sec-head"></div><div class="stack">'+
-   '<section class="card sec s-dados" id="sec-dados"></section><section class="card sec s-art" id="sec-art"></section><section class="card sec s-mov" id="sec-mov"></section><section id="sec-res"></section></div>'+
+   '<section class="card sec s-dados" id="sec-dados"></section><section class="card sec s-prev" id="sec-prev"></section><section class="card sec s-art" id="sec-art"></section><section class="card sec s-mov" id="sec-mov"></section><section id="sec-res"></section></div>'+
    '<datalist id="dl-cli"></datalist><datalist id="dl-fios"></datalist><datalist id="dl-lotes"></datalist>';
   renderDados();renderHead();renderArt();renderMov();renderRes();fillLists();
   if(focusKey){const el=$('[data-f="'+focusKey.replace(/"/g,'\\"')+'"]');if(el){el.focus();if(el.select&&el.type==='text'&&!keepFocus)el.select()}focusKey=null}
@@ -680,7 +719,70 @@ function renderHead(){
   '<div class="sub">'+esc(o.artigos.map(a=>a.nome).filter(Boolean).join(' · ')||'Sem artigos')+'</div></div><span class="sp"></span>'+
   '<div class="seg" role="group" aria-label="Estado da encomenda"><button type="button" data-set-est="aberta" aria-pressed="'+(o.estado!=='fechada')+'">Aberta</button><button type="button" data-set-est="fechada" aria-pressed="'+(o.estado==='fechada')+'">Fechada</button></div>'+
   '<button class="btn" type="button" data-print="order">Imprimir encomenda</button>'+
-  '<button class="btn danger" type="button" data-act="del-order" id="delo">Eliminar encomenda</button></div>';
+  '<button class="btn danger" type="button" data-act="del-order" id="delo">Eliminar encomenda</button></div>'+
+  (orderIssues(o).length?'<div class="warns" style="margin-bottom:12px"><div class="warn b"><b>Esta encomenda ainda NÃO está gravada.</b> Para gravar, '+orderIssues(o).map(esc).join('; ')+'.</div></div>':'');
+}
+/* ===== previsão de entrega ===== */
+const pdt=t=>{const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(t||'');return m?new Date(Date.UTC(+m[1],+m[2]-1,+m[3],12)):null};
+const isoDt=d=>d.toISOString().slice(0,10);
+const isBiz=d=>{const w=d.getUTCDay();return w!==0&&w!==6};
+function bizCount(a,b){let n=0;const d=new Date(a);while(d<=b){if(isBiz(d))n++;d.setUTCDate(d.getUTCDate()+1)}return n}
+function addBiz(d,n){const x=new Date(d);let k=0;while(k<n){x.setUTCDate(x.getUTCDate()+1);if(isBiz(x))k++}return x}
+const dayDiff=(a,b)=>Math.round((b-a)/864e5);
+function prevEntrega(o,c){
+  const T=c.T,hoje=pdt(today()),prazo=pdt(o.prazo);
+  const L=o.malha.filter(m=>num(m.qtd)>0&&pdt(m.data));
+  const datas=[...new Set(L.map(m=>m.data))].sort();
+  const guias=new Set(L.map(m=>(m.guia&&String(m.guia).trim())||('#'+m.id)));
+  const R={falta:T.faltaMalha,malha:T.malha,qtd:T.qtd,prazo,hoje,nGuias:guias.size,nDias:datas.length,media:guias.size?T.malha/guias.size:null,ritmo:null,prev:null,estado:'',folga:null,nec:null,diasUteis:null};
+  R.completa=T.qtd>0&&R.falta<=0.005;
+  if(datas.length){
+    const first=pdt(datas[0]),last=pdt(datas[datas.length-1]),end=hoje>last?hoje:last;
+    R.first=first;R.last=last;
+    if(datas.length>=2){const b=Math.max(1,bizCount(first,end));R.ritmo=T.malha/b}
+  }
+  if(prazo&&!R.completa&&R.falta>0){const u=bizCount(addBiz(hoje,1),prazo);if(prazo>hoje&&u>0)R.nec=R.falta/u}
+  // previsão pelo planeado: cada artigo pelo seu ritmo diário; a encomenda acaba quando acabar o último
+  {const inc=c.A.filter(x=>x.falta>0.005);const todos=inc.length&&inc.every(x=>{const a=o.artigos.find(y=>y.id===x.id);return a&&num(a.prodDia)>0});
+   if(todos&&!R.completa){const dias=Math.max(...inc.map(x=>Math.ceil(x.falta/num(o.artigos.find(y=>y.id===x.id).prodDia))));R.planDias=dias;R.planPrev=addBiz(hoje,dias);R.planRitmo=inc.reduce((s,x)=>s+num(o.artigos.find(y=>y.id===x.id).prodDia),0)}
+   R.planTotal=o.artigos.reduce((s,a)=>s+num(a.prodDia),0)}
+  if(R.completa){
+    R.concl=R.last||null;
+    if(prazo&&R.concl)R.estado=R.concl<=prazo?'ok':'atraso',R.folga=dayDiff(R.concl,prazo);
+    else R.estado='concluida';
+    return R;
+  }
+  if(R.ritmo&&T.qtd>0){R.diasUteis=Math.ceil(R.falta/R.ritmo);R.prev=addBiz(hoje,R.diasUteis)}
+  else if(R.planPrev&&T.qtd>0){R.diasUteis=R.planDias;R.prev=R.planPrev;R.usaPlan=true}
+  if(prazo){
+    if(prazo<hoje&&R.falta>0.005){R.estado='ultrapassado';R.folga=dayDiff(prazo,hoje)}
+    else if(R.prev){R.folga=dayDiff(R.prev,prazo);R.estado=R.prev<=prazo?'ok':'atraso'}
+    else R.estado='semdados';
+  }else R.estado=R.prev?'semprazo':'semdados';
+  if(T.qtd<=0)R.estado='semqtd';
+  return R;
+}
+function renderPrev(){
+  const o=curOrder(),el=$('#sec-prev');if(!el||!o)return;
+  const c=calc(o),R=prevEntrega(o,c);
+  const dd=d=>d?fdate(isoDt(d)):'—';
+  const pl=n=>n+(Math.abs(n)===1?' dia':' dias');
+  let sit,cls='',nota='';
+  if(R.estado==='ok'){sit='Dentro do prazo';cls='ok';nota=R.completa?'Entrega concluída '+pl(R.folga)+' antes do prazo':'folga de '+pl(R.folga)+' ao ritmo atual'}
+  else if(R.estado==='atraso'){sit='Atrasado';cls='bad';nota=R.completa?'Concluída '+pl(-R.folga)+' depois do prazo':pl(-R.folga)+' depois do prazo ao ritmo atual'}
+  else if(R.estado==='ultrapassado'){sit='Prazo ultrapassado';cls='bad';nota='há '+pl(R.folga)+' · ainda faltam '+fkg(R.falta)+' kg'}
+  else if(R.estado==='concluida'){sit='Entrega concluída';cls='ok';nota='Defina o prazo para comparar'}
+  else if(R.estado==='semprazo'){sit='Sem prazo definido';nota='Preencha o prazo de entrega nos dados da encomenda'}
+  else if(R.estado==='semqtd'){sit='Falta a quantidade';nota='Indique a quantidade encomendada dos artigos'}
+  else{sit='Sem dados suficientes';nota='São precisos pelo menos 2 dias com entregas de malha, ou a produção diária prevista em todos os artigos'}
+  const prazoN=R.prazo?(R.completa?'':(R.prazo>=R.hoje?'faltam '+pl(dayDiff(R.hoje,R.prazo))+' (calendário)':'passou há '+pl(dayDiff(R.prazo,R.hoje)))):'Preencha o campo “Prazo de entrega” acima';
+  el.innerHTML='<div class="hd"><h2>Previsão de entrega</h2><span class="muted">Calculada pelo ritmo médio das guias de malha (dias úteis, de segunda a sexta).</span></div><div class="bd"><div class="kpis" style="margin:0">'+
+   '<div class="kpi"><div class="l">Prazo de entrega</div><div class="v">'+(R.prazo?dd(R.prazo):'—')+'</div><div class="n">'+prazoN+'</div></div>'+
+   '<div class="kpi"><div class="l">Ritmo médio</div><div class="v">'+(R.ritmo?fkg(R.ritmo):'—')+' <small>kg / dia útil</small></div><div class="n">'+(R.nGuias?(R.nGuias+(R.nGuias===1?' guia':' guias')+' · média '+fkg(R.media)+' kg por guia'):'Sem entregas de malha ainda')+(R.planTotal>0?'<br>previsto: '+fkg(R.planTotal)+' kg / dia':'')+'</div></div>'+
+   '<div class="kpi"><div class="l">Falta entregar</div><div class="v">'+fkg(R.falta)+' <small>/ '+fkg(R.qtd)+' kg</small></div><div class="n">'+(R.nec?'para cumprir o prazo: '+fkg(R.nec)+' kg / dia útil':(R.completa?'encomenda completa':'—'))+'</div></div>'+
+   '<div class="kpi"><div class="l">'+(R.completa?'Concluída em':'Previsão de conclusão')+'</div><div class="v">'+(R.completa?dd(R.concl):dd(R.prev))+'</div><div class="n">'+(R.completa?'data da última guia':(R.diasUteis?'≈ '+R.diasUteis+(R.diasUteis===1?' dia útil':' dias úteis')+(R.usaPlan?' pela produção prevista':' ao ritmo atual'):'—'))+'</div></div>'+
+   '<div class="kpi '+cls+'"><div class="l">Situação</div><div class="v" style="font-family:var(--f-head);font-size:19px">'+sit+'</div><div class="n">'+nota+'</div></div>'+
+  '</div>'+(R.planPrev&&!R.usaPlan?'<div class="muted" style="font-size:12.5px;margin-top:8px">Pela produção diária prevista ('+fkg(R.planRitmo)+' kg/dia): conclusão a '+dd(R.planPrev)+(R.prazo?(R.planPrev<=R.prazo?' · dentro do prazo (folga de '+pl(dayDiff(R.planPrev,R.prazo))+')':' · '+pl(dayDiff(R.prazo,R.planPrev))+' depois do prazo'):'')+'.</div>':'')+'</div>';
 }
 function renderDados(){
   const o=curOrder();
@@ -689,6 +791,7 @@ function renderDados(){
    '<div class="fld"><label>Cliente</label>'+I('o',o.id,'cliente',o.cliente,{list:'dl-cli',ph:'Nome do cliente',label:'Cliente'})+'</div>'+
    '<div class="fld"><label>Data</label>'+I('o',o.id,'data',o.data,{t:'d',label:'Data'})+'</div>'+
    '<div class="fld"><label>Ref. do cliente</label>'+I('o',o.id,'ref',o.ref,{label:'Referência do cliente'})+'</div>'+
+   '<div class="fld"><label>Prazo de entrega</label>'+I('o',o.id,'prazo',o.prazo,{t:'d',label:'Prazo de entrega'})+'</div>'+
    '<div class="fld w2"><label>Notas</label>'+I('o',o.id,'notas',o.notas,{ph:'Observações',label:'Notas'})+'</div></div></div>';
 }
 function sumChip(a){const s=a.fios.reduce((t,f)=>t+num(f.pct),0),ok=Math.abs(s-100)<0.05;return '<span class="sumchip '+(ok?'tone-ok':'tone-warn')+'" data-sum="'+esc(a.id)+'">Soma: '+nf(s,0,2)+' %'+(ok?' ✓':'')+'</span>'}
@@ -697,7 +800,8 @@ function renderArt(){
   $('#sec-art').innerHTML='<div class="hd"><h2>Artigos e composição dos fios</h2><span class="muted">A composição (%) de cada artigo decide quanto fio a malha entregue consome.</span><span class="sp"></span><button class="btn sm c-art" type="button" data-add="art">+ Artigo</button></div><div class="bd">'+
   (o.artigos.length?o.artigos.map((a,ai)=>
    '<div class="art"><div class="ah"><div class="fld"><label>Artigo '+(o.artigos.length>1?(ai+1):'')+'</label>'+I('a',a.id,'nome',a.nome,{ph:'Ex.: Jersey 30/1 Viscose C/ Licra',label:'Nome do artigo'})+'</div>'+
-   '<div class="fld"><label>Qtd enc. (kg)</label>'+I('a',a.id,'qtd',a.qtd,{t:'n',label:'Quantidade encomendada'})+'</div>'+
+   '<div class="fld"><label>Qtd enc. (kg) <b style="color:var(--bad)" title="Obrigatório">*</b></label>'+I('a',a.id,'qtd',a.qtd,{t:'n',label:'Quantidade encomendada (obrigatória)',cls:num(a.qtd)>0?'':'req',ph:'obrigatório'})+'</div>'+
+   '<div class="fld"><label>Produção diária prev. (kg)</label>'+I('a',a.id,'prodDia',a.prodDia,{t:'n',label:'Previsão de produção diária (opcional)',ph:'opcional'})+'</div>'+
    '<div class="fld"><label>Quebra prev. (%)</label>'+I('a',a.id,'qprev',a.qprev,{t:'n',label:'Quebra prevista'})+'</div>'+
    '<div><button class="x" type="button" title="Eliminar artigo" aria-label="Eliminar artigo" data-del="art" data-id="'+esc(a.id)+'">✕</button></div></div>'+
    '<div class="tw"><table class="ed"><thead><tr><th>Fio</th><th class="r" style="width:8%">% no artigo</th><th style="width:3%"></th></tr></thead><tbody>'+
@@ -718,15 +822,16 @@ function renderMov(){
     '<td>'+I('e',e.id,'lote',e.lote,{pick:'ent',label:'Lote'})+'</td><td>'+I('e',e.id,'qtd',e.qtd,{t:'n',label:'Quantidade kg'})+'</td><td>'+(e.tipo==='devolucao'?'':I('e',e.id,'paletes',e.paletes,{t:'n',label:'Número de paletes',ph:'1'}))+'</td><td>'+I('e',e.id,'nota',e.nota,{label:'Nota'})+'</td><td><button class="btn sm" type="button" data-print="label" data-id="'+esc(e.id)+'" title="Imprimir etiqueta A5">Etiqueta</button></td>'+
     '<td><button class="x" type="button" aria-label="Eliminar linha" data-del="ent" data-id="'+esc(e.id)+'">✕</button></td></tr>').join(''):'<tr><td colspan="10" class="muted" style="padding:14px 10px">Sem movimentos de fio. Use “+ Entrada de fio” quando o cliente entregar fio.</td></tr>')+
   '</tbody></table></div></div>'+
-  '<div class="blk blk-mal"><div class="bh"><h3>Saídas de malha</h3><span style="flex:1"></span><button class="btn sm c-mal" type="button" data-add="mal">+ Saída de malha</button></div>'+
-  '<div class="tw card" style="box-shadow:none"><table class="ed"><thead><tr><th style="width:13%">Guia</th><th style="width:14%">Data</th><th style="width:24%">Artigo</th><th style="width:22%">Lote(s) de fio</th><th class="r" style="width:8%">Qtd (kg)</th><th style="width:14%">Nota</th><th style="width:5%"></th></tr></thead><tbody>'+
-  (o.malha.length?o.malha.map(m=>'<tr class="mal"><td>'+I('m',m.id,'guia',m.guia,{label:'Guia'})+'</td><td>'+I('m',m.id,'data',m.data,{t:'d',label:'Data'})+'</td>'+
+  '<div class="blk blk-mal"><div class="bh"><h3>Saídas de malha</h3><span style="flex:1"></span>'+(o.artigos.length>1?'<button class="btn sm c-mal" type="button" data-add="guia" title="Lançar de uma só vez vários artigos na mesma guia">+ Guia com vários artigos</button>':'')+'<button class="btn sm c-mal" type="button" data-add="mal">+ Saída de malha</button></div>'+
+  '<div class="tw card" style="box-shadow:none"><table class="ed"><thead><tr><th style="width:13%">Guia</th><th style="width:14%">Data</th><th style="width:24%">Artigo</th><th style="width:22%">Lote(s) de fio</th><th class="r" style="width:8%">Qtd (kg)</th><th style="width:12%">Nota</th><th style="width:7%"></th></tr></thead><tbody>'+
+  (o.malha.length?o.malha.map((m,mi)=>'<tr class="mal '+(mi>0&&m.guia&&String(m.guia).trim()===String(o.malha[mi-1].guia||'').trim()?'gcont':'gnew')+'"><td>'+I('m',m.id,'guia',m.guia,{label:'Guia'})+'</td><td>'+I('m',m.id,'data',m.data,{t:'d',label:'Data'})+'</td>'+
     '<td>'+SEL('m',m.id,'artigoId',m.artigoId||'',[{v:'',l:'— escolher artigo —'},...artList],{label:'Artigo'})+'</td>'+
     '<td>'+I('m',m.id,'lote',m.lote,{pick:'mal',ph:'Escolha ▾ ou escreva 3203 + 48762',label:'Lotes'})+'</td><td>'+I('m',m.id,'qtd',m.qtd,{t:'n',label:'Quantidade kg'})+'</td><td>'+I('m',m.id,'nota',m.nota,{label:'Nota'})+'</td>'+
-    '<td><button class="x" type="button" aria-label="Eliminar linha" data-del="mal" data-id="'+esc(m.id)+'">✕</button></td></tr>').join(''):'<tr><td colspan="7" class="muted" style="padding:14px 10px">Sem saídas de malha.</td></tr>')+
+    '<td style="white-space:nowrap">'+(o.artigos.length>1?'<button class="x" type="button" aria-label="Adicionar outro artigo nesta guia" title="Adicionar outro artigo nesta guia" data-add="malg" data-id="'+esc(m.id)+'">＋</button>':'')+'<button class="x" type="button" aria-label="Eliminar linha" data-del="mal" data-id="'+esc(m.id)+'">✕</button></td></tr>').join(''):'<tr><td colspan="7" class="muted" style="padding:14px 10px">Sem saídas de malha.</td></tr>')+
   '</tbody></table></div></div></div>';
 }
 function renderRes(){
+  renderPrev();
   const o=curOrder(),el=$('#sec-res');if(!el)return;const c=calc(o),T=c.T,t=tone(T.desvio),multi=c.A.length>1;
   el.innerHTML='<div class="stack">'+
   (c.warn.length?'<div class="warns">'+c.warn.map(w=>'<div class="warn'+(w.t==='b'?' b':'')+'">'+w.m+'</div>').join('')+'</div>':'')+
@@ -771,6 +876,7 @@ function onChange(el){
     tg.fio=String(val).trim();
   }
   if(c==='a'&&p==='nome')needMov=true;
+  if(c==='a'&&p==='qtd')el.classList.toggle('req',!(num(val)>0));
   if(c==='e'&&p==='tipo')el.closest('tr').classList.toggle('dev',val==='devolucao');
   if(c==='o'&&(p==='cliente'))fillLists();
   afterEdit(o,needMov);
@@ -794,13 +900,39 @@ function undoable(o,msg){
 function newOrder(){
   const o=normalize({id:'n'+uid().slice(1),num:'',cliente:S.f.cli||'',data:today(),ref:'',notas:'',estado:'aberta',
     artigos:[{id:uid(),nome:'',qtd:null,qprev:2,fios:[{fio:'',pct:100}]}],entradas:[],malha:[]});
-  S.orders.set(o.id,o);scheduleSave(o.id);focusKey='o:'+o.id+'::num';location.hash='#enc-'+o.id;
+  S.orders.set(o.id,o);dirty.add(o.id);setStatus('err','NÃO GRAVADA — falta a quantidade encomendada');focusKey='o:'+o.id+'::num';location.hash='#enc-'+o.id;
 }
 function suggestLotes(o,artId){
   const a=o.artigos.find(x=>x.id===artId);if(!a)return '';
   const ks=new Set(a.fios.map(f=>key(f.fio)));const out=[];
   o.entradas.forEach(e=>{if(e.tipo!=='devolucao'&&ks.has(key(e.fio))&&e.lote&&!out.includes(e.lote))out.push(e.lote)});
   return out.join(' + ');
+}
+
+/* ===== guia com vários artigos ===== */
+function openGuiaDlg(o){
+  const old=$('#guiadlg');if(old)old.remove();
+  const d=document.createElement('dialog');d.id='guiadlg';d.className='dlg';
+  const lotDef=aid=>{const l=[...o.malha].reverse().find(x=>x.artigoId===aid&&x.lote);return(l&&l.lote)||suggestLotes(o,aid)};
+  d.innerHTML='<form method="dialog" class="dform"><h2>Guia de malha com vários artigos</h2>'+
+   '<div class="dgrid"><label class="fld"><span>Guia</span><input type="text" id="gd-guia" placeholder="Ex.: 2326/1500"></label><label class="fld"><span>Data</span><input type="date" id="gd-data" value="'+esc(today())+'"></label></div>'+
+   '<div class="fld"><span>Artigos desta guia (deixe a quantidade em branco nos que não vão nela)</span>'+
+   '<table class="ed" style="margin-top:6px"><thead><tr><th>Artigo</th><th>Lote(s) de fio</th><th class="r" style="width:110px">Qtd (kg)</th></tr></thead><tbody>'+
+   o.artigos.map((a,i)=>'<tr class="mal"><td style="font-weight:600">'+esc(a.nome||'(sem nome)')+'</td><td><input class="cell" type="text" list="dl-lotes" data-g="lote" data-i="'+i+'" value="'+esc(lotDef(a.id))+'" placeholder="Ex.: 3203 + 48762"></td><td><input class="cell n" type="text" inputmode="decimal" data-g="qtd" data-i="'+i+'" placeholder="0"></td></tr>').join('')+
+   '</tbody></table></div><div class="dact"><button class="btn" type="button" id="gd-cancel">Cancelar</button><button class="btn pri" type="button" id="gd-ok">Lançar guia</button></div></form>';
+  document.body.appendChild(d);
+  const q=x=>d.querySelector(x),close=()=>{try{d.close()}catch(e){}d.remove()};
+  q('#gd-cancel').onclick=close;
+  d.addEventListener('cancel',()=>setTimeout(()=>d.remove(),0));
+  q('#gd-ok').onclick=()=>{
+    const guia=q('#gd-guia').value.trim(),data=q('#gd-data').value||today();
+    const lines=[];
+    o.artigos.forEach((a,i)=>{const qv=num(d.querySelector('[data-g=qtd][data-i="'+i+'"]').value);if(qv>0)lines.push({id:uid(),guia,data,artigoId:a.id,lote:d.querySelector('[data-g=lote][data-i="'+i+'"]').value.trim(),qtd:qv,nota:''})});
+    if(!lines.length){toast('Indique a quantidade de pelo menos um artigo');return}
+    lines.forEach(l=>o.malha.push(l));
+    close();structural(o,null);toast(lines.length+(lines.length===1?' linha lançada':' linhas lançadas')+' na guia '+(guia||'(sem número)'));
+  };
+  d.showModal();const g=q('#gd-guia');if(g)g.focus();
 }
 function onAdd(kind,el){
   const o=curOrder();if(!o)return;
@@ -811,6 +943,14 @@ function onAdd(kind,el){
     const fio=yn.length===1?yn[0]:(last&&last.fio)||'';
     const lot=(()=>{for(let i=o.entradas.length-1;i>=0;i--){if(key(o.entradas[i].fio)===key(fio)&&o.entradas[i].lote)return o.entradas[i].lote}return ''})();
     const e={id:uid(),tipo:kind==='dev'?'devolucao':'entrada',guia:'',data:today(),fio,lote:lot,qtd:null,nota:''};o.entradas.push(e);structural(o,'e:'+e.id+'::guia')}
+  else if(kind==='guia'){openGuiaDlg(o)}
+  else if(kind==='malg'){
+    const base=o.malha.find(x=>x.id===el.dataset.id);if(!base)return;
+    const used=new Set(o.malha.filter(x=>String(x.guia||'').trim()===String(base.guia||'').trim()).map(x=>x.artigoId));
+    const next=(o.artigos.find(a=>!used.has(a.id))||o.artigos.find(a=>a.id!==base.artigoId)||o.artigos[0]);const aid=next?next.id:'';
+    const lastA=[...o.malha].reverse().find(x=>x.artigoId===aid&&x.lote);
+    const m={id:uid(),guia:base.guia||'',data:base.data||today(),artigoId:aid,lote:(lastA&&lastA.lote)||suggestLotes(o,aid),qtd:null,nota:''};
+    o.malha.splice(o.malha.indexOf(base)+1,0,m);structural(o,'m:'+m.id+':'+''+':qtd')}
   else if(kind==='mal'){
     const last=o.malha[o.malha.length-1],aid=(last&&last.artigoId)||(o.artigos[0]&&o.artigos[0].id)||'';
     const m={id:uid(),guia:'',data:today(),artigoId:aid,lote:(last&&last.artigoId===aid&&last.lote)||suggestLotes(o,aid),qtd:null,nota:''};o.malha.push(m);structural(o,'m:'+m.id+'::guia')}
@@ -996,10 +1136,10 @@ function csvFile(name,head,rows){
   saveFile(name,'\ufeff'+L.join('\r\n'));
 }
 function exportCsvEnc(){
-  const head=['Encomenda','Cliente','Ref. cliente','Data','Estado','Artigos','Malha encomendada (kg)','Malha entregue (kg)','Em falta (kg)','Fio entrada (kg)','Fio devolvido (kg)','Fio líquido (kg)','Stock fio teórico (kg)','Quebra real (%)','Quebra prevista (%)','Desvio (pp)','Fio devolvido?','Por devolver (kg)','Notas'];
+  const head=['Encomenda','Cliente','Ref. cliente','Data','Estado','Artigos','Malha encomendada (kg)','Malha entregue (kg)','Em falta (kg)','Fio entrada (kg)','Fio devolvido (kg)','Fio líquido (kg)','Stock fio teórico (kg)','Quebra real (%)','Quebra prevista (%)','Desvio (pp)','Fio devolvido?','Por devolver (kg)','Prazo de entrega','Previsão de entrega','Situação do prazo','Notas'];
   const rows=[...S.orders.values()].sort((x,y)=>String(y.data||'').localeCompare(String(x.data||''))).map(o=>{
     const c=calc(o),T=c.T,d=devInfo(c,o);
-    return [o.num,o.cliente,o.ref,o.data,o.estado==='fechada'?'Fechada':'Aberta',o.artigos.map(a=>a.nome).join(' | '),T.qtd,T.malha,Math.max(0,T.qtd-T.malha),T.entradas,T.devolucoes,T.liq,T.stock,T.real,T.prev,T.desvio,d.l,d.kg,o.notas];
+    return [o.num,o.cliente,o.ref,o.data,o.estado==='fechada'?'Fechada':'Aberta',o.artigos.map(a=>a.nome).join(' | '),T.qtd,T.malha,Math.max(0,T.qtd-T.malha),T.entradas,T.devolucoes,T.liq,T.stock,T.real,T.prev,T.desvio,d.l,d.kg,o.prazo,(()=>{const R=prevEntrega(o,c);return R.completa?(R.concl?isoDt(R.concl):''):(R.prev?isoDt(R.prev):'')})(),({ok:'Dentro do prazo',atraso:'Atrasado',ultrapassado:'Prazo ultrapassado',concluida:'Entrega concluída',semprazo:'Sem prazo',semdados:'Sem dados',semqtd:'Falta quantidade'})[prevEntrega(o,c).estado]||'',o.notas];
   });
   csvFile('gestao-fios-encomendas-'+today()+'.csv',head,rows);
 }
@@ -1015,15 +1155,15 @@ function exportCsvMov(){
 }
 
 /* ===== cópia completa em CSV (exportar e importar) ===== */
-const BAK_HEAD=['Registo','ID encomenda','N.º encomenda','Cliente','Ref. cliente','Data encomenda','Estado','Notas','ID linha','ID artigo','Artigo','Qtd (kg)','Quebra prev. (%)','Fio','% no artigo','Guia','Data movimento','Lote','Nota','Paletes','Pesos das paletes (kg)'];
+const BAK_HEAD=['Registo','ID encomenda','N.º encomenda','Cliente','Ref. cliente','Data encomenda','Estado','Notas','ID linha','ID artigo','Artigo','Qtd (kg)','Quebra prev. (%)','Fio','% no artigo','Guia','Data movimento','Lote','Nota','Paletes','Pesos das paletes (kg)','Prazo de entrega','Produção diária prevista (kg)'];
 const rawN=v=>(v==null||v==='')?'':String(v).replace('.',',');
 function exportCsvBak(){
   const R=[];
   [...S.orders.values()].forEach(o=>{
     const id=o.id;
-    R.push(['ENCOMENDA',id,o.num,o.cliente,o.ref,o.data,o.estado,o.notas,'','','','','','','','','','','']);
+    R.push(['ENCOMENDA',id,o.num,o.cliente,o.ref,o.data,o.estado,o.notas,'','','','','','','','','','','','','',o.prazo||'','']);
     o.artigos.forEach(a=>{
-      R.push(['ARTIGO',id,'','','','','','',a.id,'',a.nome,rawN(a.qtd),rawN(a.qprev),'','','','','','']);
+      R.push(['ARTIGO',id,'','','','','','',a.id,'',a.nome,rawN(a.qtd),rawN(a.qprev),'','','','','','','','','',rawN(a.prodDia)]);
       a.fios.forEach(f=>R.push(['FIO',id,'','','','','','','',a.id,'','','',f.fio,rawN(f.pct),'','','','']));
     });
     o.entradas.forEach(e=>R.push([e.tipo==='devolucao'?'DEVOLUCAO':'ENTRADA',id,'','','','','','',e.id,'','',rawN(e.qtd),'',e.fio,'',e.guia,e.data,e.lote,e.nota,rawN(e.paletes),Array.isArray(e.pesos)?e.pesos.map(rawN).join(' | '):'']));
@@ -1055,12 +1195,12 @@ function csvToOrders(txt){
   const dt=v=>{v=String(v||'').trim();const m=v.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/);return m?m[3]+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0'):v};
   const M=new Map();
   rows.slice(1).forEach(c=>{
-    const [tp,oid,onum,cli,ref,odata,est,notas,lid,aid,anome,qtd,qprev,fio,pct,guia,mdata,lote,nota,pal,pesosTxt]=c.map(x=>x==null?'':x);
+    const [tp,oid,onum,cli,ref,odata,est,notas,lid,aid,anome,qtd,qprev,fio,pct,guia,mdata,lote,nota,pal,pesosTxt,prazoTxt,prodTxt]=c.map(x=>x==null?'':x);
     if(!oid)return;
     const t=tp.trim().toUpperCase();
-    if(t==='ENCOMENDA'){M.set(oid,{id:oid,num:onum,cliente:cli,data:dt(odata),ref:ref,estado:(est||'aberta').toLowerCase().startsWith('f')?'fechada':'aberta',notas:notas,artigos:[],entradas:[],malha:[]});return}
+    if(t==='ENCOMENDA'){M.set(oid,{id:oid,num:onum,cliente:cli,data:dt(odata),ref:ref,estado:(est||'aberta').toLowerCase().startsWith('f')?'fechada':'aberta',notas:notas,prazo:dt(prazoTxt)||null,artigos:[],entradas:[],malha:[]});return}
     const o=M.get(oid);if(!o)return;
-    if(t==='ARTIGO')o.artigos.push({id:lid,nome:anome,qtd:num(qtd),qprev:num(qprev),fios:[]});
+    if(t==='ARTIGO'){const ar={id:lid,nome:anome,qtd:num(qtd),qprev:num(qprev),fios:[]};if(String(prodTxt).trim()!=='')ar.prodDia=num(prodTxt);o.artigos.push(ar)}
     else if(t==='FIO'){const a=o.artigos.find(x=>x.id===aid);if(a)a.fios.push({fio:fio,pct:num(pct)})}
     else if(t==='ENTRADA'||t==='DEVOLUCAO'){const en={id:lid,tipo:t==='ENTRADA'?'entrada':'devolucao',guia:guia,data:dt(mdata),fio:fio,lote:lote,qtd:num(qtd),nota:nota};if(String(pal).trim()!=='')en.paletes=num(pal);if(String(pesosTxt).trim()!=='')en.pesos=String(pesosTxt).split('|').map(x=>num(x)).filter(x=>x!=='');o.entradas.push(en)}
     else if(t==='MALHA')o.malha.push({id:lid,guia:guia,data:dt(mdata),artigoId:aid,lote:lote,qtd:num(qtd),nota:nota});
@@ -1177,8 +1317,9 @@ function orderPrintHTML(o){
   const art=id=>E((o.artigos.find(a=>a.id===id)||{}).nome||'—');
   let h='<div class="print-doc"><h1>Encomenda '+E(o.num||'(sem número)')+' · '+E(o.cliente||'sem cliente')+'</h1>'+
    '<div class="psub">Impresso em '+E(fdate(today()))+' · Estado: '+(o.estado==='fechada'?'Fechada':'Aberta')+' · Fio devolvido: '+E(d.l)+(d.kg>0?' ('+fkg(d.kg)+' kg por devolver)':'')+'</div>';
-  h+='<h2>Dados da encomenda</h2>'+pt(['N.º encomenda','Cliente','Ref. cliente','Data','Notas'],[[E(o.num),E(o.cliente),E(o.ref),E(fdate(o.data)),E(o.notas)]]);
-  h+='<h2>Artigos e composição</h2>'+pt(['Artigo','Qtd enc. (kg)','Quebra prev.','Composição'],o.artigos.map(a=>[E(a.nome),fkg(num(a.qtd)),fpct(num(a.qprev)),a.fios.map(f=>E(f.fio)+' '+nf(num(f.pct),0,2)+' %').join('<br>')]),[1,2]);
+  h+='<h2>Dados da encomenda</h2>'+pt(['N.º encomenda','Cliente','Ref. cliente','Data','Prazo de entrega','Notas'],[[E(o.num),E(o.cliente),E(o.ref),E(fdate(o.data)),E(fdate(o.prazo)),E(o.notas)]]);
+  {const R=prevEntrega(o,c);const sitT={ok:'Dentro do prazo',atraso:'Atrasado',ultrapassado:'Prazo ultrapassado',concluida:'Entrega concluída',semprazo:'Sem prazo definido',semdados:'Sem dados suficientes',semqtd:'Falta a quantidade'}[R.estado]||'';h+='<div class="pw"><b>Previsão de entrega:</b> '+(R.completa?'concluída em '+E(R.concl?fdate(isoDt(R.concl)):'—'):(R.prev?E(fdate(isoDt(R.prev))):'—'))+' · ritmo médio '+(R.ritmo?fkg(R.ritmo)+' kg/dia útil':'—')+' · '+E(sitT)+'</div>'}
+  h+='<h2>Artigos e composição</h2>'+pt(['Artigo','Qtd enc. (kg)','Prod. diária prev. (kg)','Quebra prev.','Composição'],o.artigos.map(a=>[E(a.nome),fkg(num(a.qtd)),num(a.prodDia)>0?fkg(num(a.prodDia)):'—',fpct(num(a.qprev)),a.fios.map(f=>E(f.fio)+' '+nf(num(f.pct),0,2)+' %').join('<br>')]),[1,2,3]);
   h+='<h2>Entradas e devoluções de fio</h2>'+pt(['Tipo','Guia','Data','Fio','Lote','Qtd (kg)','Nota'],o.entradas.map(e=>[e.tipo==='devolucao'?'Devolução':'Entrada',E(e.guia),E(fdate(e.data)),E(e.fio),E(e.lote),fkg(num(e.qtd)),E(e.nota)]),[5]);
   h+='<h2>Saídas de malha</h2>'+pt(['Guia','Data','Artigo','Lote(s)','Qtd (kg)','Nota'],o.malha.map(m=>[E(m.guia),E(fdate(m.data)),art(m.artigoId),E(m.lote),fkg(num(m.qtd)),E(m.nota)]),[4]);
   h+='<h2>Resumo'+(o.estado==='fechada'?'':' (quebra provisória)')+'</h2>'+pt(['Malha entregue','Malha encomendada','Fio líquido','Quebra real','Quebra prevista','Desvio','Stock fio (teórico)'],
