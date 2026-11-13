@@ -321,6 +321,14 @@ td.nec{font-weight:700;color:var(--c-fio)}
 
 .cell.req,.ed .cell.req{border-color:var(--bad);background:var(--bad-soft)}
 .cell.req::placeholder{color:var(--bad)}
+.datc{white-space:nowrap}
+.datc .d1{color:var(--muted)}
+.datc .d2{font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums}
+.datc .d2.pz-ok{color:var(--ok)}
+.datc .d2.pz-bad{color:var(--bad)}
+.datc .d2.pz-n{color:var(--muted);font-weight:500;font-size:12px}
+.btn.tgl[aria-pressed="true"]{background:var(--bad);border-color:var(--bad);color:var(--surface);font-weight:700}
+.btn.tgl:not([aria-pressed="true"]){color:var(--bad);border-color:var(--bad)}
 </style>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -445,7 +453,7 @@ const tone=d=>d==null?'':(d>0.5?'bad':(d>0.05?'warn':'ok'));
 
 /* ============ estado e armazenamento ============ */
 const S={orders:new Map(),view:'list',openId:null,ready:false,mode:'?',
-  f:{q:'',cli:'',est:'aberta',scli:'',sest:'aberta',sall:false,lq:'',lcli:'',lmulti:false,qcli:'',qest:'',qtab:'fio'}};
+  f:{q:'',cli:'',atr:false,est:'aberta',scli:'',sest:'aberta',sall:false,lq:'',lcli:'',lmulti:false,qcli:'',qest:'',qtab:'fio'}};
 const dirty=new Set(),timers=new Map(),chain=new Map();
 let sb=null;
 const LS='gestao-fios-encomendas-v1';
@@ -594,7 +602,10 @@ function viewList(v){
   const all=[...S.orders.values()];
   if(!all.length){v.innerHTML='<div class="pagehead"><h1>Encomendas</h1></div>'+empty('Crie a primeira encomenda para lançar artigos, fios, entregas de malha e devoluções.');return}
   const F=S.f,q=key(F.q);
-  const rows=sortedRows(o=>(!F.cli||o.cliente===F.cli)&&(!F.est||o.estado===F.est)&&(!q||key([o.num,o.cliente,o.ref,...o.artigos.map(a=>a.nome)].join(' ')).includes(q)));
+  const rowsBase=sortedRows(o=>(!F.cli||o.cliente===F.cli)&&(!F.est||o.estado===F.est)&&(!q||key([o.num,o.cliente,o.ref,...o.artigos.map(a=>a.nome)].join(' ')).includes(q)));
+  const isLate=r=>{if(r.o.estado==='fechada')return false;const R=prevEntrega(r.o,r.c);return !R.completa&&(R.estado==='atraso'||R.estado==='ultrapassado')};
+  const nLate=rowsBase.filter(isLate).length;
+  const rows=F.atr?rowsBase.filter(isLate):rowsBase;
   const open=rows.filter(r=>r.o.estado!=='fechada');
   const sum=(a,f)=>a.reduce((s,r)=>s+f(r),0);
   const withQ=rows.filter(r=>r.c.T.real!=null);
@@ -605,21 +616,23 @@ function viewList(v){
   v.innerHTML='<div class="pagehead"><div><h1>Encomendas</h1><div class="sub">Malha produzida com fio dos clientes</div></div><span class="sp"></span><button class="btn pri" data-act="new">+ Nova encomenda</button></div>'+
   '<div class="kpis">'+
    '<div class="kpi"><div class="l">Encomendas abertas</div><div class="v">'+open.length+' <small>de '+rows.length+'</small></div></div>'+
+   '<div class="kpi'+(nLate?' bad':' ok')+'"><div class="l">Encomendas atrasadas</div><div class="v">'+nLate+'</div><div class="n">'+(nLate?'prazo ultrapassado ou previsão fora do prazo':'nenhuma em atraso')+'</div></div>'+
    '<div class="kpi"><div class="l">Malha por entregar</div><div class="v">'+fkg(falta)+' <small>kg</small></div></div>'+
    '<div class="kpi'+(fFio>0.05?' bad':'')+'"><div class="l">Stock de fio dos clientes</div><div class="v">'+fkg(stock)+' <small>kg</small></div>'+(fFio>0.05?'<div class="n tone-bad">'+fkg(fFio)+' kg de fio em falta</div>':'<div class="n">teórico, encomendas abertas</div>')+'</div>'+
    '<div class="kpi"><div class="l">Quebra real / prevista</div><div class="v">'+fpct(qReal)+' <small>/ '+fpct(qPrev)+'</small></div><div class="n">inclui valores provisórios</div></div>'+
   '</div>'+
   '<div class="filters"><input type="search" id="fq" placeholder="Pesquisar encomenda, cliente, artigo…" value="'+esc(F.q)+'" aria-label="Pesquisar">'+
    '<select id="fcli" aria-label="Cliente">'+opts(allClients(),F.cli,'Todos os clientes')+'</select>'+
-   '<div class="seg" role="group" aria-label="Estado">'+[['aberta','Abertas'],['fechada','Fechadas'],['','Todas']].map(x=>'<button type="button" data-est="'+x[0]+'" aria-pressed="'+(F.est===x[0])+'">'+x[1]+'</button>').join('')+'</div></div>'+
-  '<div class="card tw"><table class="tbl"><thead><tr><th>Enc.</th><th>Cliente</th><th>Ref. cliente</th><th>Data</th><th>Artigo</th><th class="r">Encomendado</th><th class="r">Entregue</th><th class="r">Em falta</th><th class="r">Stock fio</th><th class="r">Quebra real</th><th class="r">Prevista</th><th>Estado</th><th>Fio devolvido</th></tr></thead><tbody>'+
+   '<div class="seg" role="group" aria-label="Estado">'+[['aberta','Abertas'],['fechada','Fechadas'],['','Todas']].map(x=>'<button type="button" data-est="'+x[0]+'" aria-pressed="'+(F.est===x[0])+'">'+x[1]+'</button>').join('')+'</div>'+
+   '<button type="button" class="btn tgl" data-atr="1" aria-pressed="'+!!F.atr+'" title="Mostrar só as encomendas atrasadas">Só atrasadas ('+nLate+')</button></div>'+
+  '<div class="card tw"><table class="tbl"><thead><tr><th>Enc.</th><th>Cliente</th><th>Ref. cliente</th><th>Data<br><span style="font-weight:500;text-transform:none;letter-spacing:0">Prazo</span></th><th>Artigo</th><th class="r">Encomendado</th><th class="r">Entregue</th><th class="r">Em falta</th><th class="r">Stock fio</th><th class="r">Quebra real</th><th class="r">Prevista</th><th>Estado</th><th>Fio devolvido</th></tr></thead><tbody>'+
   (rows.length?rows.map((r,ri)=>{const o=r.o,c=r.c,T=c.T,A=c.A,n=Math.max(1,A.length),t=o.estado==='fechada'?tone(T.desvio):'',zc=ri%2?'g1':'g0';
     const rs=' rowspan="'+n+'"';
     let h='';
     for(let k=0;k<n;k++){
       const x=A[k];
       h+='<tr class="'+zc+(k===0?' gs':'')+(k<n-1?' sub':'')+'" data-go="'+esc(o.id)+'" tabindex="0">';
-      if(k===0)h+='<td class="enc st-'+devInfo(c,o).k+'"'+rs+'><a href="#enc-'+esc(o.id)+'">'+esc(o.num||'(sem número)')+'</a></td><td'+rs+'>'+esc(o.cliente)+'</td><td class="enc refc"'+rs+'>'+esc(o.ref||'—')+'</td><td class="muted"'+rs+'>'+fdate(o.data)+'</td>';
+      if(k===0)h+='<td class="enc st-'+devInfo(c,o).k+'"'+rs+'><a href="#enc-'+esc(o.id)+'">'+esc(o.num||'(sem número)')+'</a></td><td'+rs+'>'+esc(o.cliente)+'</td><td class="enc refc"'+rs+'>'+esc(o.ref||'—')+'</td><td class="datc"'+rs+'>'+prazoCell(o,c)+'</td>';
       if(x)h+='<td><div class="trunc">'+esc(x.nome)+'</div></td><td class="num">'+fkg(x.qtd)+'</td><td class="num">'+fkg(x.malha)+bar(x.entPct)+'</td><td class="num">'+fkg(x.falta)+'</td>';
       else h+='<td class="muted">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td>';
       if(k===0)h+='<td class="num'+(T.falta>0.05?' tone-bad':'')+'"'+rs+'>'+(o.estado==='fechada'?'—':fkg(T.falta>0.05?-T.falta:T.stock))+'</td>'+
@@ -761,6 +774,15 @@ function prevEntrega(o,c){
   }else R.estado=R.prev?'semprazo':'semdados';
   if(T.qtd<=0)R.estado='semqtd';
   return R;
+}
+function prazoCell(o,c){
+  const R=prevEntrega(o,c),dd=d=>d?fdate(isoDt(d)):'';
+  let cls='pz-n',tip='';
+  if(R.estado==='ok'){cls='pz-ok';tip=R.completa?'Entregue dentro do prazo':'Dentro do prazo'+(R.prev?' · previsão '+dd(R.prev):'')}
+  else if(R.estado==='atraso'){cls='pz-bad';tip=R.completa?'Entregue depois do prazo':'Atrasada'+(R.prev?' · previsão '+dd(R.prev):'')}
+  else if(R.estado==='ultrapassado'){cls='pz-bad';tip='Prazo ultrapassado · faltam '+fkg(R.falta)+' kg'}
+  else if(R.estado==='semdados'&&R.prazo){tip='Sem dados suficientes para prever'}
+  return '<div class="d1">'+fdate(o.data)+'</div>'+(o.prazo?'<div class="d2 '+cls+'" title="'+esc(tip)+'">'+fdate(o.prazo)+'</div>':'<div class="d2 pz-n muted" title="Sem prazo definido">sem prazo</div>');
 }
 function renderPrev(){
   const o=curOrder(),el=$('#sec-prev');if(!el||!o)return;
@@ -1352,12 +1374,13 @@ root.addEventListener('change',e=>{
   if(t.matches('input[data-act="import"]')){importFile(t.files[0]);t.value='';return}
 });
 root.addEventListener('click',e=>{
-  const b=e.target.closest('[data-act],[data-print],[data-add],[data-del],[data-set-est],[data-est],[data-sest],[data-qtab],[data-qest],tr[data-go]');if(!b)return;
+  const b=e.target.closest('[data-act],[data-print],[data-add],[data-del],[data-set-est],[data-est],[data-atr],[data-sest],[data-qtab],[data-qest],tr[data-go]');if(!b)return;
   if(b.matches('tr[data-go]')){if(e.target.closest('a'))return;location.hash='#enc-'+b.dataset.go;return}
   if(b.dataset.print){onPrint(b.dataset.print,b);return}
   if(b.dataset.add){onAdd(b.dataset.add,b);return}
   if(b.dataset.del){onDel(b.dataset.del,b);return}
   if(b.dataset.setEst){const o=curOrder();if(o){o.estado=b.dataset.setEst;scheduleSave(o.id);renderHead();renderRes()}return}
+  if('atr' in b.dataset){S.f.atr=!S.f.atr;viewList($('#view'));return}
   if('est' in b.dataset){S.f.est=b.dataset.est;viewList($('#view'));return}
   if('sest' in b.dataset){S.f.sest=b.dataset.sest;viewStock($('#view'));return}
   if(b.dataset.qtab){S.f.qtab=b.dataset.qtab;viewQuebras($('#view'));return}
