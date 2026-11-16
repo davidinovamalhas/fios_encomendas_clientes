@@ -329,6 +329,26 @@ td.nec{font-weight:700;color:var(--c-fio)}
 .datc .d2.pz-n{color:var(--muted);font-weight:500;font-size:12px}
 .btn.tgl[aria-pressed="true"]{background:var(--bad);border-color:var(--bad);color:var(--surface);font-weight:700}
 .btn.tgl:not([aria-pressed="true"]){color:var(--bad);border-color:var(--bad)}
+/* lista em cartões (telemóvel) */
+.mlist{display:none}
+@media (max-width:720px){
+  .card.tw:has(>.tbl){display:none}
+  .mlist{display:flex;flex-direction:column;gap:10px}
+  .mc{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px 10px 16px;box-shadow:inset 6px 0 0 var(--line);cursor:pointer;display:flex;flex-direction:column;gap:6px}
+  .mc.st-b{box-shadow:inset 6px 0 0 var(--bad)}.mc.st-w{box-shadow:inset 6px 0 0 #E0A21A}.mc.st-o{box-shadow:inset 6px 0 0 var(--ok)}
+  .mc .mh{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.mc .mh .sp{flex:1}
+  .mc .mn{font-weight:700;font-size:15px;color:var(--accent);text-decoration:none}
+  .mc .mcl{font-size:13.5px}
+  .mc .mdt{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;font-size:12.5px}.mc .mdt .d2{margin-top:0}
+  .mc .ma{border-top:1px solid var(--line2);padding-top:6px}
+  .mc .man{font-weight:600;font-size:13.5px;line-height:1.3;overflow-wrap:anywhere}
+  .mc .mq,.mc .mf{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:3px}
+  .mc .mq span,.mc .mf span{display:flex;flex-direction:column;font-variant-numeric:tabular-nums;font-size:13px}
+  .mc small{font-size:10px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);font-weight:600}
+  .mc .mf{border-top:1px solid var(--line2);padding-top:6px}
+  .kpis{grid-template-columns:1fr 1fr;gap:8px}.kpi{padding:10px}.kpi .v{font-size:20px}
+  .filters input[type=search]{flex:1 1 100%;max-width:none}.filters select{flex:1 1 100%}
+}
 </style>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -640,7 +660,17 @@ function viewList(v){
       h+='</tr>';
     }
     return h}).join(''):'<tr><td colspan="13" class="empty">Nenhuma encomenda com estes filtros.</td></tr>')+
-  '</tbody></table></div>';
+  '</tbody></table></div>'+
+  '<div class="mlist">'+(rows.length?rows.map(r=>{const o=r.o,c=r.c,T=c.T,A=c.A,t=o.estado==='fechada'?tone(T.desvio):'';
+    return '<article class="mc st-'+devInfo(c,o).k+'" data-go="'+esc(o.id)+'" tabindex="0">'+
+     '<div class="mh"><a class="mn" href="#enc-'+esc(o.id)+'">'+esc(o.num||'(sem número)')+'</a><span class="sp"></span>'+estPill(o)+devPill(devInfo(c,o))+'</div>'+
+     '<div class="mcl"><b>'+esc(o.cliente||'—')+'</b>'+(o.ref?'<span class="muted"> · ref. '+esc(o.ref)+'</span>':'')+'</div>'+
+     '<div class="datc mdt">'+prazoCell(o,c)+'</div>'+
+     (A.length?A.map(x=>'<div class="ma"><div class="man">'+esc(x.nome||'(sem nome)')+'</div>'+
+       '<div class="mq"><span><small>Enc.</small>'+fkg(x.qtd)+'</span><span><small>Entregue</small>'+fkg(x.malha)+'</span><span><small>Em falta</small>'+fkg(x.falta)+'</span></div>'+bar(x.entPct)+'</div>').join(''):'<div class="ma muted">Sem artigos</div>')+
+     '<div class="mf"><span><small>Stock fio</small><b class="'+(T.falta>0.05?'tone-bad':'')+'">'+(o.estado==='fechada'?'—':fkg(T.falta>0.05?-T.falta:T.stock))+'</b></span>'+
+     '<span><small>Quebra real</small><b class="tone-'+t+'">'+fpct(T.real)+(T.real!=null?prov(o):'')+'</b></span>'+
+     '<span><small>Prevista</small><b>'+fpct(T.prev)+'</b></span></div></article>'}).join(''):'<div class="empty">Nenhuma encomenda com estes filtros.</div>')+'</div>';
   $('#fq').oninput=e=>{S.f.q=e.target.value;const pos=e.target.selectionStart;viewList(v);const n=$('#fq');n.focus();n.setSelectionRange(pos,pos)};
   $('#fcli').onchange=e=>{S.f.cli=e.target.value;viewList(v)};
 }
@@ -1374,8 +1404,8 @@ root.addEventListener('change',e=>{
   if(t.matches('input[data-act="import"]')){importFile(t.files[0]);t.value='';return}
 });
 root.addEventListener('click',e=>{
-  const b=e.target.closest('[data-act],[data-print],[data-add],[data-del],[data-set-est],[data-est],[data-atr],[data-sest],[data-qtab],[data-qest],tr[data-go]');if(!b)return;
-  if(b.matches('tr[data-go]')){if(e.target.closest('a'))return;location.hash='#enc-'+b.dataset.go;return}
+  const b=e.target.closest('[data-act],[data-print],[data-add],[data-del],[data-set-est],[data-est],[data-atr],[data-sest],[data-qtab],[data-qest],[data-go]');if(!b)return;
+  if(b.matches('[data-go]')){if(e.target.closest('a'))return;location.hash='#enc-'+b.dataset.go;return}
   if(b.dataset.print){onPrint(b.dataset.print,b);return}
   if(b.dataset.add){onAdd(b.dataset.add,b);return}
   if(b.dataset.del){onDel(b.dataset.del,b);return}
@@ -1399,7 +1429,7 @@ root.addEventListener('click',e=>{
   else if(a==='csv'&&S.csv){const L=[S.csv.head.join(';')].concat(S.csv.rows.map(r=>r.map(csvCell).join(';')));saveFile(S.csv.name,'﻿'+L.join('\r\n'))}
 });
 root.addEventListener('keydown',e=>{
-  if(e.key==='Enter'&&e.target.matches('tr[data-go]')){location.hash='#enc-'+e.target.dataset.go}
+  if(e.key==='Enter'&&e.target.matches('[data-go]')){location.hash='#enc-'+e.target.dataset.go}
 });
 
 /* ============ arranque ============ */
