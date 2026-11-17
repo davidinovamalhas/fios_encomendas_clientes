@@ -1,62 +1,73 @@
-# Malhas Acabadas – app de gestão (telemóvel e PC)
+# Gestão Fios Encomendas
 
-App web simples (HTML + JavaScript) com base de dados e login no **Supabase**, alojada no **GitHub Pages**.
-Funciona no browser do PC e do telemóvel e pode ser instalada no ecrã inicial (PWA).
+App em HTML para gerir encomendas de malha feitas com fio dos clientes: artigos e composição, entradas e devoluções de fio, saídas de malha, stock por lote e quebras por fio e por artigo.
 
-## O que faz
-- Cada encomenda tem **N.º Encomenda, Ref. Cliente e Cliente** e pode ter **vários artigos**. Cada artigo tem as suas etapas, locais (malharia, tinturaria, estamparia) e datas.
-- O cartão da encomenda mostra, sem abrir nada, a **posição de cada artigo** (etapa, local e datas). Tocar num artigo abre-o para editar; tocar no cabeçalho abre a encomenda.
-- Etapas coloridas: **1 Produção da malha (azul)** → **2 Tinturaria (roxo)** → **3 Estamparia (laranja, opcional)** → **4 Entrega ao cliente (verde)** → Concluída (cinza).
-- Produção **interna** ou **subcontratada** (com nome do subcontratado).
-- Datas (todas editáveis): pedida pelo cliente, fim da malha, envio para a tinturaria, entrega ao cliente. Ficam a **vermelho** quando passam do prazo.
-- Guias de transporte e de remessa por encomenda (nº, data, destino, kg, notas).
-- Pesquisa, filtro por etapa e filtro "só atrasadas". Botão "Avançar etapa".
-- Só utilizadores com login acedem aos dados (Supabase Auth + RLS).
+Ficheiros:
 
----
+| Ficheiro | Para que serve |
+|---|---|
+| `index.html` | A app completa (um só ficheiro) |
+| `config.js` | URL e chave pública do Supabase |
+| `supabase/schema.sql` | Cria a tabela e as regras de segurança |
+| `dados-iniciais.json` | As 34 encomendas do seu Excel, prontas a importar |
 
-## Novidades da v3
-- Lista ordenada por **N.º de encomenda** (ordem numérica; pode alternar ↓/↑ ou ordenar pela data pedida) e **filtro por cliente**.
-- Datas de **receção da tinturaria** e **receção da estamparia** (regresso do material), além do envio para a tinturaria.
-- **Estado automático:** ao lançar uma guia com destino tinturaria ou estamparia, o artigo (ou todos, se escolher "Toda a encomenda") passa a essa etapa. Só avança, nunca recua. A alteração manual continua possível.
-- Botão 💾 (topo): **cópia de segurança** (.json), exportação para Excel (.csv) e **reposição** a partir de uma cópia.
-- Se já tinha a v2 instalada: corra só `migracao_v3.sql` no SQL Editor (não apaga dados).
+## 1. Supabase (base de dados)
 
-## PARTE 1 – Supabase (base de dados + utilizadores)
+1. Em supabase.com, crie um projeto (**New project**). Guarde a palavra-passe da base de dados.
+2. Vá a **SQL Editor > New query**, cole o conteúdo de `supabase/schema.sql` e carregue em **Run**.
+3. Vá a **Authentication > Users > Add user > Create new user**. Escreva o seu email e uma palavra-passe e marque **Auto Confirm User**. Esta é a conta com que vai entrar na app.
+4. Vá a **Authentication > Sign In / Providers** e desligue **Allow new users to sign up**. Assim só quem criou manualmente consegue entrar.
+5. Vá a **Project Settings > API** (ou **API Keys**) e copie:
+   - **Project URL**
+   - a chave **anon** (ou **publishable**)
 
-1. Ir a https://supabase.com → **Start your project** → entrar (pode ser com a conta GitHub).
-2. **New project**: dar um nome (ex.: `malhas`), definir e guardar a palavra-passe da base de dados, escolher a região **West EU (Ireland)** ou **Frankfurt** → Create.
-3. Quando o projeto estiver pronto: menu **SQL Editor** → **New query** → abrir o ficheiro `schema.sql`, copiar tudo, colar e carregar em **Run**. Deve aparecer "Success".
-   (Em **Table Editor** passam a existir as tabelas `encomendas` e `guias`.)
-4. **Impedir registos abertos**: **Authentication → Sign In / Providers** (ou *Settings*) → desativar **"Allow new users to sign up"**. Assim só entra quem vocês criarem.
-5. **Criar utilizadores**: **Authentication → Users → Add user → Create new user**. Colocar email e palavra-passe, marcar **Auto Confirm User**. Criar um para si e um para o comercial.
-6. **Copiar as chaves**: **Project Settings → API** (ou *Data API*):
-   - **Project URL** (ex.: `https://abcdxyz.supabase.co`)
-   - **anon / public key** (ou *publishable key*)
-7. Abrir o ficheiro `config.js` e substituir os dois valores. (A chave *anon* é pública por desenho; quem protege os dados é o login + as regras RLS do `schema.sql`. **Nunca** usar a chave `service_role` aqui.)
+## 2. Configurar a app
 
-### Já tinha instalado a versão anterior?
-Não corra o `schema.sql`. Corra apenas `migracao_v2.sql` (uma vez) no SQL Editor: converte as encomendas existentes (cada uma fica com 1 artigo; o antigo "referência" passa a N.º Encomenda).
+Abra `config.js` e preencha:
 
-## PARTE 2 – GitHub (código + alojamento gratuito)
+```js
+window.APP_CONFIG = {
+  SUPABASE_URL: "https://xxxxxxxx.supabase.co",
+  SUPABASE_ANON_KEY: "a-sua-chave-anon-ou-publishable"
+};
+```
 
-1. Criar conta em https://github.com se ainda não tiver.
-2. **New repository** (botão + no canto superior direito): nome `malhas-acabadas`, **Public** (o GitHub Pages gratuito exige repositório público; os dados continuam protegidos pelo login), Create repository.
-3. **Carregar os ficheiros**: na página do repositório → **Add file → Upload files** → arrastar todos os ficheiros desta pasta (`index.html`, `styles.css`, `app.js`, `config.js`, `manifest.json`, `sw.js`, `icon.svg`, `icon-192.png`, `icon-512.png`, `icon-maskable-512.png`, `apple-touch-icon.png`, `schema.sql`, `migracao_v2.sql`, `migracao_v3.sql`, `README.md`) → **Commit changes**.
-   *(Alternativa com git: `git init`, `git add .`, `git commit -m "app malhas"`, `git branch -M main`, `git remote add origin https://github.com/SEU-UTILIZADOR/malhas-acabadas.git`, `git push -u origin main`.)*
-4. **Publicar**: **Settings → Pages** → em *Build and deployment* escolher **Deploy from a branch**, branch **main**, pasta **/ (root)** → Save.
-5. Ao fim de 1–2 minutos o endereço aparece no topo da página, no formato `https://SEU-UTILIZADOR.github.io/malhas-acabadas/`.
+A chave anon pode ir para o GitHub: é pública por desenho. Quem protege os dados é o login e as regras do `schema.sql`. Nunca coloque a chave `service_role` em nenhum ficheiro da app.
 
-## PARTE 3 – Ligar tudo e instalar
+## 3. GitHub (alojamento)
 
-1. No Supabase: **Authentication → URL Configuration** → em **Site URL** colocar o endereço do GitHub Pages (e também em *Redirect URLs*).
-2. Abrir o endereço no PC e entrar com o utilizador criado.
-3. **No telemóvel**: abrir o endereço no Chrome (Android) → menu ⋮ → **Instalar aplicação / Adicionar ao ecrã inicial**. No iPhone: Safari → Partilhar → **Adicionar ao ecrã principal**.
+1. Crie um repositório novo (por exemplo `gestao-fios-encomendas`).
+2. Envie para a raiz do repositório: `index.html`, `config.js`, `supabase/schema.sql` e `README.md`. Pode usar **Add file > Upload files**. O `dados-iniciais.json` só é preciso uma vez; pode deixá-lo de fora do repositório.
+3. Vá a **Settings > Pages**. Em **Build and deployment**, escolha **Deploy from a branch**, branch `main`, pasta `/ (root)`, e guarde.
+4. Ao fim de um ou dois minutos a app fica em `https://O-SEU-UTILIZADOR.github.io/gestao-fios-encomendas/`.
 
-## Alterações futuras
-Para mudar algo na app, editar o ficheiro no GitHub (lápis ✏️ → Commit). O site atualiza sozinho em ~1 minuto.
+Se preferir manter o repositório privado, o GitHub Pages em repositórios privados exige um plano pago. Em alternativa, use Netlify ou Cloudflare Pages ligados ao mesmo repositório.
 
-## Notas
-- Projetos gratuitos do Supabase ficam em pausa após cerca de 1 semana sem utilização; é só retomar no painel. Para uso diário não é problema.
-- Neste momento qualquer utilizador com login vê e edita todas as encomendas. Se quiserem que o comercial só **veja** (sem editar), ou só veja as suas encomendas, ajusta-se nas regras (policies) do `schema.sql`.
-- Cópias de segurança: use o botão 💾 da app (sugestão: semanalmente) e guarde o ficheiro .json fora do Supabase. O plano gratuito do Supabase não inclui cópias automáticas descarregáveis.
+## 4. Primeira utilização
+
+1. Abra o endereço da app e entre com o email e a palavra-passe do passo 1.3.
+2. Vá a **Dados e cálculos > Importar cópia (JSON)** e escolha `dados-iniciais.json`. As 34 encomendas do Excel passam para o Supabase.
+3. Dali em diante, tudo o que lançar fica guardado no Supabase e aparece em todos os dispositivos.
+
+## Cópias de segurança
+
+Em **Dados e cálculos > Exportar tudo (JSON)** descarrega uma cópia completa. Importar essa cópia substitui as encomendas com o mesmo identificador e não apaga as outras. No Supabase, em **Database > Backups**, tem as cópias automáticas do projeto (o plano gratuito não inclui backups diários).
+
+## Usar sem Supabase
+
+Se `config.js` estiver com os valores vazios, a app funciona só no navegador (localStorage), sem login. Serve para experimentar, mas os dados não saem desse navegador.
+
+## Como funcionam os cálculos
+
+- **Consumo da malha** = malha entregue do artigo × % do fio no artigo.
+- **Consumo teórico** = consumo da malha × (1 + quebra prevista do artigo). É o que sai do stock.
+- **Fio líquido** = entradas − devoluções.
+- **Quebra real de um fio** = (fio líquido − consumo da malha) ÷ fio líquido, somando os artigos que usam esse fio, cada um com a sua %.
+- **Quebra por artigo** = quebra de cada fio repartida pelos artigos conforme o fio que cada um consome.
+- **Stock por lote** = entradas − devoluções − consumo teórico, retirado dos lotes mais antigos primeiro.
+
+Numa encomenda aberta a quebra é provisória, porque o fio que ainda não foi devolvido conta como quebra. Feche a encomenda depois de devolver o fio que sobrou.
+
+## Modelo de dados
+
+Uma linha por encomenda na tabela `encomendas` (`id`, `data` em JSON, `updated_at`). O JSON guarda os artigos (com a composição dos fios), as entradas e devoluções de fio e as saídas de malha. Uma encomenda com vários artigos fica numa só linha.

@@ -1,7 +1,7 @@
 {
- "name": "Gestão Fios Encomendas",
- "short_name": "Fios",
- "description": "Fio de clientes e malha por encomenda",
+ "name": "feitio_encomendas",
+ "short_name": "feitio_encomendas",
+ "description": "Gestão de encomendas, fio de clientes e malha",
  "start_url": "./index.html",
  "scope": "./",
  "display": "standalone",
